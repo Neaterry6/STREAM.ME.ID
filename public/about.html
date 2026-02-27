@@ -1,116 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>About StreamMe</title>
-<link rel="stylesheet" href="style.css">
-<style>
-  /* Responsive About Page Overrides */
-  body {
-    font-family: 'Inter', sans-serif;
-    background-color: #f9f9f9;
-    color: #222;
-    margin: 0;
-    padding: 0;
-  }
-
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
-    background: #1e1e1e;
-    color: #fff;
-  }
-
-  header .logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
-
-  nav a {
-    color: #fff;
-    margin-left: 1.5rem;
-    text-decoration: none;
-    font-weight: 500;
-  }
-
-  nav a.active {
-    text-decoration: underline;
-  }
-
-  main.about-page {
-    max-width: 900px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-  }
-
-  main.about-page section {
-    margin-bottom: 2rem;
-    background: #fff;
-    padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  }
-
-  main.about-page h1,
-  main.about-page h2 {
-    color: #1e1e1e;
-    margin-bottom: 1rem;
-  }
-
-  main.about-page ul {
-    list-style: disc inside;
-    padding-left: 0;
-  }
-
-  main.about-page ul li {
-    margin-bottom: 0.5rem;
-  }
-
-  .social-links a {
-    display: inline-block;
-    margin-right: 1rem;
-    margin-top: 0.5rem;
-    text-decoration: none;
-    color: #1e1e1e;
-    font-weight: 600;
-    transition: color 0.3s;
-  }
-
-  .social-links a:hover {
-    color: #ff3b3f;
-  }
-
-  .credits {
-    text-align: center;
-    font-style: italic;
-    margin-top: 2rem;
-  }
-
-  footer {
-    text-align: center;
-    padding: 1.5rem;
-    background: #1e1e1e;
-    color: #fff;
-    margin-top: 2rem;
-  }
-
-  @media (max-width: 600px) {
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About StreamMe</title>
+  <link rel="manifest" href="/manifest.json">
+  <style>
+    :root {
+      --bg: #000;
+      --card: #121212;
+      --text: #ffffff;
+      --sec: #b3b3b3;
+      --green: #1ed760;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 80px 16px 140px;
+      line-height: 1.6;
+    }
     header {
-      flex-direction: column;
-      align-items: flex-start;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(10px);
+      padding: 12px 16px;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-
+    .logo { font-size: 1.4rem; font-weight: 700; }
     nav a {
-      margin-left: 0;
-      margin-top: 0.5rem;
+      color: var(--text);
+      margin-left: 1.5rem;
+      text-decoration: none;
+      font-weight: 500;
     }
-  }
-</style>
+    nav a.active { color: var(--green); text-decoration: underline; }
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    section {
+      background: var(--card);
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    h1, h2 { color: var(--green); margin-bottom: 1rem; }
+    ul { padding-left: 1.5rem; list-style: disc; }
+    .social-links a {
+      display: inline-block;
+      margin: 0.5rem 1rem 0.5rem 0;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .social-links a:hover { color: var(--green); }
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      background: #000;
+      color: var(--sec);
+      margin-top: 2rem;
+    }
+    @media (max-width: 600px) {
+      header { flex-direction: column; align-items: flex-start; gap: 8px; }
+      nav a { margin-left: 0; margin-right: 1rem; }
+    }
+  </style>
 </head>
 <body>
+
 <header>
   <div class="logo">StreamMe</div>
   <nav>
@@ -119,53 +85,54 @@
   </nav>
 </header>
 
-<main class="about-page">
+<main>
   <section>
-    <h1>About StreamMe</h1>
-    <p><strong>StreamMe Music 2026</strong> — created with ❤️ by Akewushola Abdulbakri Temitope — is your ultimate platform for streaming music and videos online. Instantly explore trending songs, albums, playlists, and videos, all in a clean and responsive interface!</p>
+    <h1>About StreamMe Music & Video 2026</h1>
+    <p>Created with ❤️ by Akewushola Abdulbakri Temitope — StreamMe is your go-to platform for discovering and streaming trending music, albums, playlists and videos from multiple sources in a clean, dark, modern interface.</p>
   </section>
 
   <section>
-    <h2>How to Use StreamMe</h2>
+    <h2>How to Use</h2>
     <ul>
-      <li>Search for songs, albums, artists, or playlists using the search bar.</li>
-      <li>Click on any result to play audio or video directly in your browser.</li>
-      <li>Download your favorite tracks or videos for offline use.</li>
-      <li>Your recent searches are saved in history for quick access.</li>
-      <li>Switch between light and dark themes for a comfortable experience.</li>
+      <li>Search songs, artists, albums or playlists</li>
+      <li>Tap any card to play audio or video instantly</li>
+      <li>Download tracks directly from the player</li>
+      <li>Add favorites for quick access</li>
+      <li>Works offline for cached content</li>
     </ul>
   </section>
 
   <section>
     <h2>Features</h2>
     <ul>
-      <li>Trending music & videos automatically loaded when opening the app.</li>
-      <li>Clean, modern, and fully responsive design for mobile and web.</li>
-      <li>Direct playback without extra apps or plugins.</li>
-      <li>Download tracks and videos easily.</li>
-      <li>Search history and user-friendly interface for quick navigation.</li>
+      <li>Auto-loading trending content</li>
+      <li>Fully responsive dark UI</li>
+      <li>Direct browser playback</li>
+      <li>Search history & favorites</li>
+      <li>Service Worker + offline support</li>
     </ul>
   </section>
 
   <section>
-    <h2>Connect with Me</h2>
+    <h2>Connect</h2>
     <div class="social-links">
       <a href="https://www.instagram.com/broken_vzn/" target="_blank">Instagram</a>
       <a href="https://www.snapchat.com/add/brokenvzn" target="_blank">Snapchat</a>
       <a href="https://www.facebook.com/akewushola.abdulbakri" target="_blank">Facebook</a>
-      <a href="https://www.linkedin.com/in/akewushola-abdulbakri-temitope-8814a63aa?utm" target="_blank">LinkedIn</a>
+      <a href="https://www.linkedin.com/in/akewushola-abdulbakri-temitope-8814a63aa" target="_blank">LinkedIn</a>
       <a href="https://portfolio-neaterry6s-projects.vercel.app/" target="_blank">Portfolio</a>
       <a href="https://wa.me/2349031575131" target="_blank">WhatsApp</a>
     </div>
   </section>
 
-  <section class="credits">
-    <p>StreamMe Music 2026 — created with ❤️ by Akewushola Abdulbakri Temitope. Enjoy your music and videos!</p>
+  <section style="text-align:center; font-style:italic;">
+    <p>StreamMe Music 2026 — Enjoy your music & videos!</p>
   </section>
 </main>
 
 <footer>
-  <p>&copy; 2026 StreamMe. All rights reserved.</p>
+  <p>© 2026 StreamMe. All rights reserved.</p>
 </footer>
+
 </body>
 </html>
