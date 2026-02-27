@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>StreamMe Music 2026</title>
+  <title>StreamMe Music & Video 2026</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -12,291 +12,86 @@
       --text: #fff;
       --text-sec: #b3b3b3;
       --primary: #1db954;
-      --primary-dark: #1aa34a;
     }
     * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      padding-bottom: 140px;
-    }
-    #loadingScreen {
-      position: fixed;
-      inset: 0;
-      background: #000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-    .logo-animation img {
-      width: 90px;
-      height: 90px;
-      border-radius: 50%;
-      margin-bottom: 16px;
-    }
-    #loadingScreen p {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--primary);
-    }
+    body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 140px; }
+    #loadingScreen { position:fixed; inset:0; background:#000; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; }
+    .logo-animation img { width:90px; height:90px; border-radius:50%; margin-bottom:16px; }
+    #loadingScreen p { font-size:1.1rem; font-weight:600; color:var(--primary); }
 
-    header {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(10px);
-      padding: 12px 16px;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .logo {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-    }
-    .search-bar {
-      flex: 1;
-      background: var(--card);
-      border-radius: 50px;
-      padding: 8px 16px;
-      display: flex;
-      align-items: center;
-    }
-    .search-bar input {
-      background: transparent;
-      border: none;
-      color: white;
-      flex: 1;
-      font-size: 0.95rem;
-    }
-    .search-bar input::placeholder { color: var(--text-sec); }
+    header { position:fixed; top:0; left:0; right:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); padding:12px 16px; z-index:100; display:flex; align-items:center; gap:12px; }
+    .logo { width:38px; height:38px; border-radius:50%; }
+    .search-bar { flex:1; background:var(--card); border-radius:50px; padding:8px 16px; display:flex; align-items:center; }
+    .search-bar input { background:transparent; border:none; color:white; flex:1; font-size:0.95rem; }
+    .search-bar input::placeholder { color:var(--text-sec); }
 
-    main {
-      padding: 70px 16px 16px;
-    }
-    h2 {
-      font-size: 1.4rem;
-      margin: 24px 0 12px;
-      font-weight: 600;
-    }
-    .filters {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-    .filter-btn {
-      padding: 6px 16px;
-      border-radius: 30px;
-      background: var(--card);
-      color: var(--text);
-      border: none;
-      font-weight: 500;
-      cursor: pointer;
-    }
-    .filter-btn.active {
-      background: var(--primary);
-      color: black;
-    }
+    main { padding:70px 16px 16px; }
+    h2 { font-size:1.4rem; margin:24px 0 12px; font-weight:600; }
+    .filters { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
+    .filter-btn { padding:6px 16px; border-radius:30px; background:var(--card); color:var(--text); border:none; font-weight:500; cursor:pointer; }
+    .filter-btn.active { background:var(--primary); color:black; }
 
-    .horizontal-scroll {
-      display: flex;
-      overflow-x: auto;
-      gap: 12px;
-      padding-bottom: 8px;
-      scrollbar-width: none;
-    }
-    .horizontal-scroll::-webkit-scrollbar { display: none; }
-    .mix-card {
-      width: 160px;
-      flex-shrink: 0;
-      background: linear-gradient(135deg, #333, #1a1a1a);
-      border-radius: 12px;
-      overflow: hidden;
-      position: relative;
-    }
-    .mix-card img {
-      width: 100%;
-      aspect-ratio: 1;
-      object-fit: cover;
-    }
-    .mix-card .label {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      background: linear-gradient(transparent, rgba(0,0,0,0.9));
-      padding: 16px 12px 10px;
-      font-size: 0.9rem;
-      font-weight: 600;
-    }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(160px,1fr)); gap:16px; }
+    .card { background:var(--card); border-radius:12px; overflow:hidden; text-align:center; cursor:pointer; transition:transform 0.2s; }
+    .card:hover { transform:scale(1.04); }
+    .card img { width:100%; aspect-ratio:1; object-fit:cover; }
+    .card-info { padding:10px; }
+    .card-title { font-size:0.95rem; margin-bottom:4px; }
+    .card-artist { font-size:0.85rem; color:var(--text-sec); }
+    .card-actions { padding:0 10px 10px; display:flex; gap:8px; justify-content:center; }
+    .btn { padding:6px 12px; border:none; border-radius:20px; font-size:0.8rem; cursor:pointer; }
+    .btn-play { background:var(--primary); color:black; }
+    .btn-download { background:#444; color:white; text-decoration:none; }
 
-    .artist-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 16px;
-    }
-    .artist-card {
-      text-align: center;
-    }
-    .artist-card img {
-      width: 100%;
-      border-radius: 50%;
-      aspect-ratio: 1;
-      object-fit: cover;
-      margin-bottom: 8px;
-    }
-    .artist-card p {
-      font-size: 0.9rem;
-      color: var(--text-sec);
-    }
+    .mini-player { position:fixed; bottom:70px; left:0; right:0; background:rgba(30,30,30,0.95); backdrop-filter:blur(12px); padding:10px 16px; display:flex; align-items:center; gap:12px; border-top:1px solid #222; display:none; }
+    .mini-player img { width:50px; height:50px; border-radius:6px; object-fit:cover; }
+    .mini-player .info { flex:1; }
+    nav { position:fixed; bottom:0; left:0; right:0; background:#000; border-top:1px solid #222; display:flex; justify-content:space-around; padding:10px 0; z-index:100; }
+    nav button { background:none; border:none; color:var(--text-sec); font-size:1.6rem; cursor:pointer; }
+    nav button.active { color:var(--primary); }
 
-    .track-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid #222;
-    }
-    .track-item img {
-      width: 50px;
-      height: 50px;
-      border-radius: 6px;
-      object-fit: cover;
-    }
-    .track-info {
-      flex: 1;
-    }
-    .track-info h4 {
-      font-size: 0.95rem;
-      margin-bottom: 3px;
-    }
-    .track-info p {
-      font-size: 0.8rem;
-      color: var(--text-sec);
-    }
-
-    /* Mini player */
-    .mini-player {
-      position: fixed;
-      bottom: 70px; left: 0; right: 0;
-      background: rgba(30,30,30,0.95);
-      backdrop-filter: blur(12px);
-      padding: 10px 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border-top: 1px solid #222;
-    }
-    .mini-player img {
-      width: 50px;
-      height: 50px;
-      border-radius: 6px;
-      object-fit: cover;
-    }
-    .mini-player .info {
-      flex: 1;
-    }
-    .mini-player .controls button {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-
-    /* Bottom nav */
-    nav {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      background: #000;
-      border-top: 1px solid #222;
-      display: flex;
-      justify-content: space-around;
-      padding: 10px 0;
-      z-index: 100;
-    }
-    nav button {
-      background: none;
-      border: none;
-      color: var(--text-sec);
-      font-size: 1.6rem;
-      cursor: pointer;
-    }
-    nav button.active { color: var(--primary); }
-
-    #playerModal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.9);
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-content {
-      background: #181818;
-      width: 90%;
-      max-width: 420px;
-      border-radius: 16px;
-      padding: 24px;
-      text-align: center;
-      position: relative;
-    }
-    .close {
-      position: absolute;
-      top: 16px; right: 20px;
-      font-size: 2rem;
-      cursor: pointer;
-    }
+    #playerModal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:200; align-items:center; justify-content:center; }
+    .modal-content { background:#181818; width:90%; max-width:420px; border-radius:16px; padding:24px; text-align:center; position:relative; }
+    .close { position:absolute; top:16px; right:20px; font-size:2rem; cursor:pointer; }
+    footer { text-align:center; padding:20px; color:var(--text-sec); font-size:0.9rem; }
+    footer a { color:var(--primary); margin:0 10px; text-decoration:none; }
   </style>
 </head>
 <body>
 
   <div id="loadingScreen">
     <div class="logo-animation">
-      <img src="https://i.ibb.co/Mx5q388P/your-logo-filename.jpg" alt="Logo">
+      <img src="https://i.ibb.co/Mx5q388P/your-logo.jpg" alt="Logo"> <!-- replace with real direct link -->
     </div>
     <p>StreamMe Music & Video 2026</p>
   </div>
 
   <header>
-    <img class="logo" src="https://i.ibb.co/Mx5q388P/your-logo-filename.jpg" alt="Logo">
+    <img class="logo" src="https://i.ibb.co/Mx5q388P/your-logo.jpg" alt="Logo">
     <div class="search-bar">
-      <input id="searchInput" placeholder="What do you want to listen to?" type="text">
+      <input id="searchInput" placeholder="Search songs, artists..." type="text">
     </div>
   </header>
 
   <main>
     <div class="filters">
-      <button class="filter-btn active">All</button>
-      <button class="filter-btn">Music</button>
-      <button class="filter-btn">Podcasts</button>
+      <button class="filter-btn active" onclick="setSource('spotify')">Spotify</button>
+      <button class="filter-btn" onclick="setSource('youtube')">YouTube</button>
+      <button class="filter-btn" onclick="setSource('musicbrainz')">MusicBrainz</button>
     </div>
 
-    <h2>Artists you like</h2>
-    <div class="artist-grid" id="artistsGrid"></div>
+    <h2>Trending</h2>
+    <div id="trendingGrid" class="grid"></div>
 
-    <h2>Jump back in</h2>
-    <div class="horizontal-scroll" id="mixesGrid"></div>
-
-    <h2>Start listening</h2>
-    <div id="tracksList"></div>
+    <h2>Results</h2>
+    <div id="resultsGrid" class="grid"></div>
   </main>
 
-  <div class="mini-player" id="miniPlayer" style="display:none">
+  <div class="mini-player" id="miniPlayer">
     <img id="miniCover" src="" alt="">
     <div class="info">
       <div id="miniTitle">—</div>
       <div id="miniArtist" style="color:var(--text-sec); font-size:0.85rem;">—</div>
-    </div>
-    <div class="controls">
-      <button>⏮</button>
-      <button>▶</button>
-      <button>⏭</button>
     </div>
   </div>
 
@@ -314,65 +109,103 @@
       <img id="coverImage" src="" alt="Cover" style="width:220px; border-radius:12px; margin:20px 0;">
       <h2 id="mediaTitle">—</h2>
       <p id="mediaArtist" style="color:var(--text-sec); margin:8px 0 20px;">—</p>
-      <audio id="audioPlayer" controls style="width:100%; margin:20px 0;"></audio>
+      <audio id="audioPlayer" controls style="width:100%; margin:20px 0; display:none;"></audio>
       <iframe id="videoPlayer" width="100%" height="240" style="display:none; border-radius:12px;" frameborder="0" allowfullscreen></iframe>
     </div>
   </div>
 
+  <footer>
+    <p>StreamMe Music & Video 2026 — Created with ❤️ by Akewushola AbdulBakri Temitope</p>
+    <a href="about.html">About</a>
+  </footer>
+
   <script>
-    // Fake data simulation (replace with real API calls later)
-    window.onload = () => {
-      setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 1400);
+    let currentSource = 'spotify';
 
-      // Artists you like
-      const artists = [
-        {name:"Olivetheboy", img:"https://i.scdn.co/image/..."}, // use real spotify-like images
-        {name:"BoyPee", img:"https://via.placeholder.com/140/222/fff?text=BoyPee"},
-        {name:"Hyce", img:"https://via.placeholder.com/140/222/fff?text=Hyce"},
-        {name:"Brown Joel", img:"https://via.placeholder.com/140/222/fff?text=Brown"}
-      ];
-      const ag = document.getElementById('artistsGrid');
-      artists.forEach(a => {
-        ag.innerHTML += `<div class="artist-card"><img src="\( {a.img}" alt=" \){a.name}"><p>${a.name}</p></div>`;
-      });
+    function setSource(src) {
+      currentSource = src;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+    }
 
-      // Mixes
-      const mixes = [
-        {title:"Olivetheboy Mix", img:"https://via.placeholder.com/160x160/333/fff?text=Olivetheboy"},
-        {title:"ODUMODUBLVCK Mix", img:"https://via.placeholder.com/160x160/333/fff?text=ODUMODU"},
-        {title:"Brown Joel Mix", img:"https://via.placeholder.com/160x160/333/fff?text=Brown+Joel"}
-      ];
-      const mg = document.getElementById('mixesGrid');
-      mixes.forEach(m => {
-        mg.innerHTML += `<div class="mix-card"><img src="\( {m.img}" alt=""><div class="label"> \){m.title}</div></div>`;
-      });
+    async function fetchAndRender(url, gridId) {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        const grid = document.getElementById(gridId);
+        grid.innerHTML = '';
+        const items = data.items || data.results || data.albums || data.tracks || data || [];
+        items.slice(0, 12).forEach(item => {  // limit to reasonable number
+          const title  = item.title || item.name || 'Unknown';
+          const artist = item.artist || item.channel || item.artists?.[0]?.name || '';
+          const img    = item.thumbnail || item.images?.[0]?.url || item.album?.images?.[0]?.url || 'https://via.placeholder.com/160';
+          const id     = item.id || item.videoId || item.track_id || '';
+          const downloadUrl = currentSource === 'spotify' ? `/api/spotify/download?url=${encodeURIComponent(item.external_urls?.spotify || item.url || '')}` :
+                              currentSource === 'youtube' ? `/api/yts/getVideo?id=${id}` : '#';
 
-      // Tracks
-      const tracks = [
-        {title:"Ogechi (feat. Davido) - Remix", artist:"BoyPee, Hyce, Brown Joel, Davido", img:"https://via.placeholder.com/50/222/fff?text=OG"},
-        {title:"WAIT FOR U (feat. Drake & Tems)", artist:"Future, Drake, Tems", img:"https://via.placeholder.com/50/222/fff?text=W4U"},
-        {title:"Run Away (OMALICHA)", artist:"Asylum, Olivetheboy", img:"https://via.placeholder.com/50/222/fff?text=RA"}
-      ];
-      const tl = document.getElementById('tracksList');
-      tracks.forEach(t => {
-        tl.innerHTML += `
-          <div class="track-item">
-            <img src="${t.img}" alt="">
-            <div class="track-info">
-              <h4>${t.title}</h4>
-              <p>${t.artist}</p>
-            </div>
-            <button style="background:none;border:none;color:var(--primary);font-size:1.4rem;">⋯</button>
-          </div>`;
-      });
-    };
+          const card = `
+            <div class="card" onclick="playMedia('\( {id}', ' \){title}', '\( {artist}', ' \){img}')">
+              <img src="\( {img}" alt=" \){title}">
+              <div class="card-info">
+                <div class="card-title">${title}</div>
+                <div class="card-artist">${artist}</div>
+              </div>
+              <div class="card-actions">
+                <button class="btn btn-play">Play</button>
+                <a href="${downloadUrl}" target="_blank" class="btn btn-download">Download</a>
+              </div>
+            </div>`;
+          grid.innerHTML += card;
+        });
+      } catch (e) {
+        document.getElementById(gridId).innerHTML = '<p>Error loading</p>';
+      }
+    }
 
-    // Search simulation (connect to your /api endpoints later)
+    function playMedia(id, title, artist, img) {
+      document.getElementById('mediaTitle').textContent = title;
+      document.getElementById('mediaArtist').textContent = artist;
+      document.getElementById('coverImage').src = img;
+
+      const audio = document.getElementById('audioPlayer');
+      const video = document.getElementById('videoPlayer');
+      audio.style.display = 'none';
+      video.style.display = 'none';
+
+      if (currentSource === 'youtube' && id) {
+        video.src = `https://www.youtube.com/embed/${id}`;
+        video.style.display = 'block';
+      } else {
+        // Spotify/MB: audio src needs real stream URL from download endpoint
+        audio.src = ''; // Fetch from /api/spotify/download or similar if returns stream
+        audio.style.display = 'block';
+      }
+
+      document.getElementById('playerModal').style.display = 'flex';
+
+      document.getElementById('miniTitle').textContent = title;
+      document.getElementById('miniArtist').textContent = artist;
+      document.getElementById('miniCover').src = img;
+      document.getElementById('miniPlayer').style.display = 'flex';
+    }
+
     document.getElementById('searchInput').addEventListener('keypress', e => {
       if (e.key === 'Enter') {
-        alert("Search: " + e.target.value + "\n(Connect your backend APIs here)");
+        const q = e.target.value.trim();
+        if (!q) return;
+        let url = '';
+        if (currentSource === 'youtube') url = `/api/yts/searchAll?q=${encodeURIComponent(q)}`;
+        else if (currentSource === 'spotify') url = `/api/spotify/search?q=${encodeURIComponent(q)}`;
+        else url = `/api/musicbrainz/search?query=${encodeURIComponent(q)}`;
+        fetchAndRender(url, 'resultsGrid');
       }
     });
+
+    window.onload = () => {
+      setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 1400);
+      fetchAndRender('/api/musicbrainz/albums?q=trending', 'trendingGrid');
+    };
   </script>
 </body>
 </html>
