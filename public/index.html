@@ -1,190 +1,214 @@
-
-Here’s the updated HTML with:
-
-- Source selector buttons (Spotify / YouTube / MusicBrainz)
-- Audio + video playback in modal
-- Download button kept
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>StreamMe Music & Video 2026</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StreamMe</title>
+  <link rel="manifest" href="/manifest.json">
   <style>
-    :root{--bg:#000;--card:#121212;--text:#fff;--text-sec:#b3b3b3;--primary:#1db954;}
+    :root{--bg:#000;--card:#121212;--text:#fff;--sec:#b3b3b3;--green:#1ed760;}
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:100px;}
+    body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:140px;}
     #loadingScreen{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;}
-    .logo-animation img{width:90px;height:90px;border-radius:50%;margin-bottom:16px;}
-    #loadingScreen p{font-size:1.1rem;font-weight:600;color:var(--primary);}
-    header{position:fixed;top:0;left:0;right:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);padding:12px 16px;z-index:100;display:flex;align-items:center;gap:12px;}
-    .logo{width:38px;height:38px;border-radius:50%;}
-    .search-bar{flex:1;background:var(--card);border-radius:50px;padding:8px 16px;display:flex;align-items:center;}
-    .search-bar input{background:transparent;border:none;color:white;flex:1;font-size:0.95rem;}
-    .search-bar input::placeholder{color:var(--text-sec);}
-    .source-filters{display:flex;gap:8px;margin:80px 16px 16px;flex-wrap:wrap;}
-    .source-btn{padding:8px 16px;border-radius:30px;background:var(--card);color:var(--text);border:none;font-weight:500;cursor:pointer;}
-    .source-btn.active{background:var(--primary);color:black;}
-    main{padding:0 16px 100px;}
-    h2{font-size:1.4rem;margin:24px 0 12px;font-weight:600;}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;}
-    .card{background:var(--card);border-radius:12px;overflow:hidden;text-align:center;cursor:pointer;transition:transform 0.2s;}
-    .card:hover{transform:scale(1.04);}
-    .card img{width:100%;aspect-ratio:1;object-fit:cover;}
-    .card-info{padding:10px;}
-    .card-title{font-size:0.95rem;margin-bottom:4px;}
-    .card-artist{font-size:0.85rem;color:var(--text-sec);}
-    .card-actions{padding:0 10px 12px;display:flex;gap:8px;justify-content:center;}
-    .btn{padding:6px 12px;border:none;border-radius:20px;font-size:0.8rem;cursor:pointer;}
-    .btn-play{background:var(--primary);color:black;}
-    .btn-download{background:#444;color:white;text-decoration:none;}
+    #loadingScreen img{width:120px;height:120px;border-radius:50%;}
+    #loadingScreen p{font-size:1.2rem;font-weight:600;color:var(--green);margin-top:20px;}
+    header{position:fixed;top:0;left:0;right:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);padding:12px 16px;z-index:100;display:flex;gap:12px;align-items:center;}
+    .logo{width:38px;height:38px;border-radius:50%;background:#444;}
+    .search{flex:1;background:var(--card);border-radius:999px;padding:10px 16px;}
+    .search input{width:100%;background:transparent;border:none;color:#fff;font-size:0.95rem;}
+    .search input::placeholder{color:var(--sec);}
+    .filters{position:sticky;top:64px;background:var(--bg);padding:16px 16px 8px;z-index:90;display:flex;gap:8px;overflow-x:auto;}
+    .filter-btn{padding:6px 18px;border-radius:999px;background:var(--card);color:#fff;border:none;font-weight:600;cursor:pointer;white-space:nowrap;}
+    .filter-btn.active{background:var(--green);color:#000;}
+    main{padding:16px;}
+    h2{font-size:1.35rem;margin:24px 0 12px;font-weight:700;}
+    .horizontal{display:flex;overflow-x:auto;gap:16px;padding-bottom:12px;scrollbar-width:none;}
+    .horizontal::-webkit-scrollbar{display:none;}
+    .mix-card{width:160px;flex-shrink:0;background:var(--card);border-radius:8px;overflow:hidden;position:relative;}
+    .mix-card img{width:100%;aspect-ratio:1;object-fit:cover;}
+    .mix-card .label{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,#000);padding:40px 12px 12px;font-weight:600;}
+    .track-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #222;cursor:pointer;}
+    .track-item img{width:50px;height:50px;border-radius:6px;object-fit:cover;}
+    .track-info{flex:1;}
+    .track-info h4{font-size:0.95rem;margin-bottom:4px;}
+    .track-info p{font-size:0.82rem;color:var(--sec);}
+    .fav-btn{background:none;border:none;color:#fff;font-size:1.2rem;cursor:pointer;margin-left:8px;}
+    .mini-player{position:fixed;bottom:70px;left:0;right:0;background:rgba(30,30,30,0.95);backdrop-filter:blur(12px);padding:10px 16px;display:flex;gap:12px;align-items:center;border-top:1px solid #222;z-index:90;}
+    .mini-player img{width:50px;height:50px;border-radius:6px;object-fit:cover;}
+    .mini-player .info{flex:1;}
+    nav{position:fixed;bottom:0;left:0;right:0;background:#000;border-top:1px solid #222;display:flex;justify-content:space-around;padding:10px 0;z-index:100;}
+    nav button{background:none;border:none;color:var(--sec);font-size:1.8rem;cursor:pointer;}
+    nav button.active{color:var(--green);}
     #playerModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:200;align-items:center;justify-content:center;}
-    .modal-content{background:#181818;width:90%;max-width:500px;border-radius:16px;padding:24px;text-align:center;position:relative;}
+    .modal-content{background:#181818;width:92%;max-width:480px;border-radius:16px;padding:24px;text-align:center;position:relative;}
     .close{position:absolute;top:16px;right:20px;font-size:2.2rem;cursor:pointer;color:#aaa;}
     audio, iframe{width:100%;margin:20px 0;border-radius:8px;}
-    footer{text-align:center;padding:20px;color:var(--text-sec);font-size:0.9rem;}
-    footer a{color:var(--primary);margin:0 10px;text-decoration:none;}
   </style>
 </head>
 <body>
 
-  <div id="loadingScreen">
-    <div class="logo-animation">
-      <img src="https://i.ibb.co/Mx5q388P/your-logo.jpg" alt="Logo">
-    </div>
-    <p>Loading trending...</p>
+<div id="loadingScreen">
+  <img src="https://i.ibb.co/Mx5q388P/your-logo.jpg" alt="Logo">
+  <p>Loading...</p>
+</div>
+
+<header>
+  <div class="logo"></div>
+  <div class="search"><input id="q" placeholder="What do you want to listen to?" type="text"></div>
+</header>
+
+<div class="filters">
+  <button class="filter-btn active" onclick="setSource('spotify')">Spotify</button>
+  <button class="filter-btn" onclick="setSource('youtube')">YouTube</button>
+  <button class="filter-btn" onclick="setSource('musicbrainz')">MusicBrainz</button>
+</div>
+
+<main>
+  <h2>Your Favorites</h2>
+  <div class="horizontal" id="favorites"></div>
+
+  <h2>Artists you like</h2>
+  <div class="horizontal" id="artists"></div>
+
+  <h2>Jump back in</h2>
+  <div class="horizontal" id="mixes"></div>
+
+  <h2>Start listening</h2>
+  <div id="tracks"></div>
+</main>
+
+<div class="mini-player" id="miniPlayer" style="display:none">
+  <img id="miniCover" src="" alt="">
+  <div class="info">
+    <div id="miniTitle">—</div>
+    <div id="miniArtist" style="color:var(--sec);font-size:0.85rem;">—</div>
   </div>
+</div>
 
-  <header>
-    <img class="logo" src="https://i.ibb.co/Mx5q388P/your-logo.jpg" alt="Logo">
-    <div class="search-bar">
-      <input id="searchInput" placeholder="Search songs, artists..." type="text">
-    </div>
-  </header>
+<nav>
+  <button class="active">🏠</button>
+  <button>🔍</button>
+  <button>📚</button>
+  <button>⭐</button>
+  <button>+</button>
+</nav>
 
-  <div class="source-filters">
-    <button class="source-btn active" onclick="setSource('spotify')">Spotify</button>
-    <button class="source-btn" onclick="setSource('youtube')">YouTube</button>
-    <button class="source-btn" onclick="setSource('musicbrainz')">MusicBrainz</button>
+<div id="playerModal">
+  <div class="modal-content">
+    <span class="close" onclick="closePlayer()">×</span>
+    <img id="coverImage" src="" style="width:220px;border-radius:12px;margin:0 auto 20px;display:block;">
+    <h2 id="mediaTitle">—</h2>
+    <p id="mediaArtist" style="color:var(--sec);margin:8px 0 20px;">—</p>
+    <audio id="audioPlayer" controls></audio>
+    <iframe id="videoPlayer" frameborder="0" allowfullscreen style="display:none;"></iframe>
   </div>
+</div>
 
-  <main id="mainContent" style="display:none;">
-    <h2>Trending Albums</h2>
-    <div id="trendingGrid" class="grid"></div>
+<script>
+let currentSource = 'spotify';
+let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
 
-    <h2>Search Results</h2>
-    <div id="resultsGrid" class="grid"></div>
-  </main>
+function setSource(src) {
+  currentSource = src;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
 
-  <div id="playerModal">
-    <div class="modal-content">
-      <span class="close" onclick="closePlayer()">×</span>
-      <img id="coverImage" src="" alt="Cover" style="width:220px;border-radius:12px;margin:0 auto 20px;display:block;">
-      <h2 id="mediaTitle">—</h2>
-      <p id="mediaArtist" style="color:var(--text-sec);margin:8px 0 20px;">—</p>
-      <audio id="audioPlayer" controls></audio>
-      <iframe id="videoPlayer" frameborder="0" allowfullscreen></iframe>
-    </div>
-  </div>
-
-  <footer>
-    <p>StreamMe Music & Video 2026 — Created with ❤️ by Akewushola AbdulBakri Temitope</p>
-    <a href="about.html">About</a>
-  </footer>
-
-  <script>
-    let currentSource = 'spotify';
-
-    function setSource(src) {
-      currentSource = src;
-      document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
-    }
-
-    async function fetchAndRender(url, gridId) {
-      try {
-        const res = await fetch(url);
-        const data = await res.json();
-        const grid = document.getElementById(gridId);
-        grid.innerHTML = '';
-        const items = data.items || data.results || data.albums || data.tracks || data || [];
-        items.slice(0,12).forEach(item => {
-          const title  = item.title || item.name || 'Unknown';
-          const artist = item.artist || item.artists?.[0]?.name || item.channel || '';
-          const img    = item.images?.[0]?.url || item.thumbnail || 'https://via.placeholder.com/160';
-          const id     = item.id || item.videoId || '';
-          const dlUrl  = currentSource === 'spotify' ? `/api/spotify/download?url=${encodeURIComponent(item.url||'')}` :
-                         currentSource === 'youtube' ? `/api/yts/getVideo?id=${id}` : '#';
-
-          grid.innerHTML += `
-            <div class="card">
-              <img src="${img}" alt="${title}">
-              <div class="card-info">
-                <div class="card-title">${title}</div>
-                <div class="card-artist">${artist}</div>
-              </div>
-              <div class="card-actions">
-                <button class="btn btn-play" onclick="playMedia('${id}','${title}','${artist}','${img}')">Play</button>
-                <a href="${dlUrl}" target="_blank" class="btn btn-download">Download</a>
-              </div>
-            </div>`;
-        });
-      } catch(e) {
-        document.getElementById(gridId).innerHTML = '<p>Error loading</p>';
-      }
-    }
-
-    function playMedia(id, title, artist, img) {
-      document.getElementById('mediaTitle').textContent = title;
-      document.getElementById('mediaArtist').textContent = artist;
-      document.getElementById('coverImage').src = img;
-
-      const audio = document.getElementById('audioPlayer');
-      const video = document.getElementById('videoPlayer');
-      audio.style.display = 'none';
-      video.style.display = 'none';
-      audio.pause();
-      audio.src = '';
-      video.src = '';
-
-      if (currentSource === 'youtube' && id) {
-        video.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
-        video.style.display = 'block';
-      } else {
-        // Spotify / MusicBrainz → placeholder (real stream URL needed from your API)
-        audio.src = ''; // ← replace with real audio stream link when available
-        audio.style.display = 'block';
-      }
-
-      document.getElementById('playerModal').style.display = 'flex';
-    }
-
-    function closePlayer() {
-      document.getElementById('playerModal').style.display = 'none';
-      document.getElementById('audioPlayer').pause();
-      document.getElementById('videoPlayer').src = '';
-    }
-
-    document.getElementById('searchInput').addEventListener('keypress', e => {
-      if (e.key === 'Enter') {
-        const q = e.target.value.trim();
-        if (!q) return;
-        let url = '';
-        if (currentSource === 'youtube') url = `/api/yts/searchAll?q=${encodeURIComponent(q)}`;
-        else if (currentSource === 'spotify') url = `/api/spotify/search?q=${encodeURIComponent(q)}`;
-        else url = `/api/musicbrainz/search?query=${encodeURIComponent(q)}`;
-        fetchAndRender(url, 'resultsGrid');
-      }
+async function load(url, container, isMix=false) {
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    container.innerHTML = '';
+    const items = data.items || data.results || [];
+    items.slice(0,12).forEach(i => {
+      const t = i.name || i.title || '—';
+      const a = i.artists?.[0]?.name || i.channel || '';
+      const img = i.images?.[0]?.url || i.thumbnail || 'https://via.placeholder.com/160';
+      const id = i.id || i.videoId || '';
+      const card = document.createElement('div');
+      card.className = isMix ? 'mix-card' : 'artist-card';
+      card.innerHTML = isMix
+        ? `<img src="\( {img}"><div class="label"> \){t}</div>`
+        : `<img src="\( {img}"><p> \){t}</p>`;
+      card.onclick = () => playMedia(id, t, a, img);
+      container.appendChild(card);
     });
+  } catch {}
+}
 
-    window.onload = async () => {
-      await fetchAndRender('/api/musicbrainz/albums?q=trending', 'trendingGrid');
-      document.getElementById('loadingScreen').style.display = 'none';
-      document.getElementById('mainContent').style.display = 'block';
-    };
-  </script>
+function playMedia(id, title, artist, img) {
+  document.getElementById('mediaTitle').textContent = title;
+  document.getElementById('mediaArtist').textContent = artist;
+  document.getElementById('coverImage').src = img;
+
+  const audio = document.getElementById('audioPlayer');
+  const video = document.getElementById('videoPlayer');
+  audio.style.display = 'none';
+  video.style.display = 'none';
+  audio.pause(); video.src = '';
+
+  if (currentSource === 'youtube' && id) {
+    video.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+    video.style.display = 'block';
+  } else {
+    audio.src = `/api/\( {currentSource}/download?url= \){encodeURIComponent(id)}`;
+    audio.style.display = 'block';
+  }
+
+  document.getElementById('playerModal').style.display = 'flex';
+
+  document.getElementById('miniCover').src = img;
+  document.getElementById('miniTitle').textContent = title;
+  document.getElementById('miniArtist').textContent = artist;
+  document.getElementById('miniPlayer').style.display = 'flex';
+}
+
+function closePlayer() {
+  document.getElementById('playerModal').style.display = 'none';
+  document.getElementById('audioPlayer').pause();
+  document.getElementById('videoPlayer').src = '';
+}
+
+function renderFavorites() {
+  const cont = document.getElementById('favorites');
+  cont.innerHTML = '';
+  favorites.forEach(f => {
+    const card = document.createElement('div');
+    card.className = 'mix-card';
+    card.innerHTML = `<img src="\( {f.img}"><div class="label"> \){f.title}</div>`;
+    card.onclick = () => playMedia(f.id, f.title, f.artist, f.img);
+    cont.appendChild(card);
+  });
+}
+
+document.getElementById('q').addEventListener('keypress', e => {
+  if (e.key === 'Enter') {
+    const val = e.target.value.trim();
+    if (!val) return;
+    let url = currentSource === 'youtube' ? `/api/yts/searchAll?q=${encodeURIComponent(val)}` :
+              currentSource === 'spotify' ? `/api/spotify/search?q=${encodeURIComponent(val)}` :
+              `/api/musicbrainz/search?query=${encodeURIComponent(val)}`;
+    load(url, document.getElementById('tracks'), true);
+  }
+});
+
+window.onload = () => {
+  load('/api/musicbrainz/artists?q=popular', document.getElementById('artists'), false);
+  load('/api/musicbrainz/albums?q=trending', document.getElementById('mixes'), true);
+  load('/api/musicbrainz/tracks?q=trending', document.getElementById('tracks'), true);
+  renderFavorites();
+  setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 1500);
+};
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('SW registered'))
+      .catch(err => console.log('SW failed', err));
+  });
+}
+</script>
 </body>
 </html>
