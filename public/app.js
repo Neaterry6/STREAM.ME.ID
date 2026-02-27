@@ -1,99 +1,46 @@
-import { getHistory, addHistory } from './history.js';
+import express from 'express';
+import fetch from 'node-fetch';
+import cors from 'cors';
 
-const loadingScreen = document.getElementById("loading-screen");
-const app = document.getElementById("app");
-const searchInput = document.getElementById("searchInput");
-const songsContainer = document.getElementById("songsContainer");
-const albumsContainer = document.getElementById("albumsContainer");
-const historyList = document.getElementById("historyList");
+const app = express();
+const PORT = process.env.PORT || 3000;
+const API_KEY = 'qasim-dev';
 
-const playerModal = document.getElementById("playerModal");
-const modalTitle = document.getElementById("modalTitle");
-const audioPlayer = document.getElementById("audioPlayer");
-const downloadBtn = document.getElementById("downloadBtn");
-const closeModal = document.getElementById("closeModal");
+app.use(cors());
+app.use(express.json());
+app.use(express.static('public')); // Serve frontend
 
-const API_BASE = "/api"; // backend base
-
-// Loading screen timeout
-window.addEventListener("load", () => {
-  setTimeout(() => {
-    loadingScreen.classList.add("hidden");
-    app.classList.remove("hidden");
-    loadTrending();
-    loadHistory();
-  }, 1500);
+// ======== ROUTES ========
+// Search YouTube videos
+app.get('/api/yts/searchAll', async (req,res)=>{
+  const query = req.query.query;
+  const response = await fetch(`https://api.qasimdev.dpdns.org/api/yts/searchAll?apiKey=${API_KEY}&query=${query}`);
+  const data = await response.json();
+  res.json(data);
 });
 
-// Search songs
-searchInput.addEventListener("keypress", async (e) => {
-  if(e.key === "Enter") {
-    const query = searchInput.value;
-    if(!query) return;
-    loadSongs(query);
-    addHistory({ type:"search", query });
-  }
+// Spotify search
+app.get('/api/spotify/search', async (req,res)=>{
+  const query = req.query.q;
+  const response = await fetch(`https://api.qasimdev.dpdns.org/api/spotify/search?q=${query}&apiKey=${API_KEY}`);
+  const data = await response.json();
+  res.json(data);
 });
 
-// Load trending songs
-async function loadTrending() {
-  loadSongs("trending");
-  loadAlbums("top albums");
-}
+// MusicBrainz search
+app.get('/api/musicbrainz/search', async (req,res)=>{
+  const query = req.query.query;
+  const response = await fetch(`https://api.qasimdev.dpdns.org/api/musicbrainz/search?query=${query}&apiKey=${API_KEY}`);
+  const data = await response.json();
+  res.json(data);
+});
 
-async function loadSongs(query) {
-  songsContainer.innerHTML = "Loading...";
-  const res = await fetch(`${API_BASE}/youtube/play?query=${encodeURIComponent(query)}`);
-  const data = await res.json();
-  songsContainer.innerHTML = "";
-  data.videos?.forEach(song => {
-    const div = document.createElement("div");
-    div.classList.add("item");
-    div.innerHTML = `
-      <img src="${song.thumbnail}" />
-      <h4>${song.title}</h4>
-      <p>${song.channel}</p>
-    `;
-    div.addEventListener("click", () => openPlayer(song));
-    songsContainer.appendChild(div);
-  });
-}
+// Download route (audio/video)
+app.get('/api/loaderto/download', async (req,res)=>{
+  const { url, format } = req.query;
+  const response = await fetch(`https://api.qasimdev.dpdns.org/api/loaderto/download?apiKey=${API_KEY}&url=${url}&format=${format}`);
+  const data = await response.json();
+  res.json(data);
+});
 
-async function loadAlbums(query) {
-  albumsContainer.innerHTML = "Loading...";
-  const res = await fetch(`${API_BASE}/musicbrainz/albums?query=${encodeURIComponent(query)}`);
-  const data = await res.json();
-  albumsContainer.innerHTML = "";
-  data.albums?.forEach(album => {
-    const div = document.createElement("div");
-    div.classList.add("item");
-    div.innerHTML = `
-      <img src="https://via.placeholder.com/150" />
-      <h4>${album.title}</h4>
-      <p>${album.artist}</p>
-    `;
-    albumsContainer.appendChild(div);
-  });
-}
-
-// Open player modal
-function openPlayer(song) {
-  modalTitle.textContent = song.title;
-  audioPlayer.src = song.url || song.streamUrl;
-  downloadBtn.href = song.downloadUrl || song.url;
-  playerModal.classList.remove("hidden");
-}
-
-// Close modal
-closeModal.addEventListener("click", () => playerModal.classList.add("hidden"));
-
-// History
-async function loadHistory() {
-  const history = await getHistory();
-  historyList.innerHTML = "";
-  history.forEach(h => {
-    const li = document.createElement("li");
-    li.textContent = `[${new Date(h.timestamp).toLocaleTimeString()}] ${h.type}: ${h.query}`;
-    historyList.appendChild(li);
-  });
-}
+app.listen(PORT, ()=> console.log(`StreamMe backend running on port ${PORT}`));
