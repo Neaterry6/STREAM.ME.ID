@@ -1,24 +1,20 @@
 {
   "name": "streamme",
   "version": "1.0.0",
-  "description": "StreamMe Music and Video Platform 2026",
-  "main": "server/index.js",
+  "description": "StreamMe Music & Video 2026 - Spotify styled interface with QasimDev APIs",
+  "main": "server/server.js",
   "scripts": {
-    "start": "node server/index.js",
-    "dev": "concurrently \"nodemon server/index.js\" \"live-server public\""
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js"
   },
+  "author": "Akewushola AbdulBakri Temitope",
+  "license": "MIT",
   "dependencies": {
-    "axios": "^1.6.0",
-    "express": "^4.18.2",
     "cors": "^2.8.5",
-    "body-parser": "^1.20.2",
-    "dotenv": "^16.3.1"
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1",
-    "concurrently": "^8.2.0",
-    "live-server": "^1.2.2"
-  },
-  "author": "Akewushola Abdulbakri Temitope",
-  "license": "MIT"
+    "nodemon": "^3.0.2"
+  }
 }
