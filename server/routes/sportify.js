@@ -1,0 +1,9 @@
+import express from "express";
+import { searchSpotify, downloadSpotify, trackInfo } from "../controllers/spotifyController.js";
+const router = express.Router();
+
+router.get("/search", searchSpotify);        // ?q=...
+router.get("/download", downloadSpotify);    // ?url=...
+router.get("/trackInfo", trackInfo);         // ?url=...
+
+export default router;
