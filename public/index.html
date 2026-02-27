@@ -1,70 +1,378 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StreamMe Music & Video 2026</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StreamMe Music 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000;
+      --card: #121212;
+      --text: #fff;
+      --text-sec: #b3b3b3;
+      --primary: #1db954;
+      --primary-dark: #1aa34a;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 140px;
+    }
+    #loadingScreen {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    .logo-animation img {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      margin-bottom: 16px;
+    }
+    #loadingScreen p {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(10px);
+      padding: 12px 16px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+    }
+    .search-bar {
+      flex: 1;
+      background: var(--card);
+      border-radius: 50px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+    }
+    .search-bar input {
+      background: transparent;
+      border: none;
+      color: white;
+      flex: 1;
+      font-size: 0.95rem;
+    }
+    .search-bar input::placeholder { color: var(--text-sec); }
+
+    main {
+      padding: 70px 16px 16px;
+    }
+    h2 {
+      font-size: 1.4rem;
+      margin: 24px 0 12px;
+      font-weight: 600;
+    }
+    .filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .filter-btn {
+      padding: 6px 16px;
+      border-radius: 30px;
+      background: var(--card);
+      color: var(--text);
+      border: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .filter-btn.active {
+      background: var(--primary);
+      color: black;
+    }
+
+    .horizontal-scroll {
+      display: flex;
+      overflow-x: auto;
+      gap: 12px;
+      padding-bottom: 8px;
+      scrollbar-width: none;
+    }
+    .horizontal-scroll::-webkit-scrollbar { display: none; }
+    .mix-card {
+      width: 160px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #333, #1a1a1a);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+    .mix-card img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+    }
+    .mix-card .label {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.9));
+      padding: 16px 12px 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .artist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 16px;
+    }
+    .artist-card {
+      text-align: center;
+    }
+    .artist-card img {
+      width: 100%;
+      border-radius: 50%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      margin-bottom: 8px;
+    }
+    .artist-card p {
+      font-size: 0.9rem;
+      color: var(--text-sec);
+    }
+
+    .track-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #222;
+    }
+    .track-item img {
+      width: 50px;
+      height: 50px;
+      border-radius: 6px;
+      object-fit: cover;
+    }
+    .track-info {
+      flex: 1;
+    }
+    .track-info h4 {
+      font-size: 0.95rem;
+      margin-bottom: 3px;
+    }
+    .track-info p {
+      font-size: 0.8rem;
+      color: var(--text-sec);
+    }
+
+    /* Mini player */
+    .mini-player {
+      position: fixed;
+      bottom: 70px; left: 0; right: 0;
+      background: rgba(30,30,30,0.95);
+      backdrop-filter: blur(12px);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-top: 1px solid #222;
+    }
+    .mini-player img {
+      width: 50px;
+      height: 50px;
+      border-radius: 6px;
+      object-fit: cover;
+    }
+    .mini-player .info {
+      flex: 1;
+    }
+    .mini-player .controls button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* Bottom nav */
+    nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #000;
+      border-top: 1px solid #222;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      z-index: 100;
+    }
+    nav button {
+      background: none;
+      border: none;
+      color: var(--text-sec);
+      font-size: 1.6rem;
+      cursor: pointer;
+    }
+    nav button.active { color: var(--primary); }
+
+    #playerModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: #181818;
+      width: 90%;
+      max-width: 420px;
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      position: relative;
+    }
+    .close {
+      position: absolute;
+      top: 16px; right: 20px;
+      font-size: 2rem;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 
-<!-- LOADING SCREEN -->
-<div id="loadingScreen">
-  <div class="logo-animation">
-    <img src="https://i.ibb.co/YOUR-ID-HERE/Mx5q388P.jpg" width="80" height="80" alt="StreamMe Logo">
+  <div id="loadingScreen">
+    <div class="logo-animation">
+      <img src="https://i.ibb.co/Mx5q388P/your-logo-filename.jpg" alt="Logo">
+    </div>
     <p>StreamMe Music & Video 2026</p>
   </div>
-</div>
 
-<!-- HEADER -->
-<header>
-  <div class="logo-text">
-    <img id="logoImg" src="https://i.ibb.co/YOUR-ID-HERE/Mx5q388P.jpg" alt="StreamMe Logo">
+  <header>
+    <img class="logo" src="https://i.ibb.co/Mx5q388P/your-logo-filename.jpg" alt="Logo">
+    <div class="search-bar">
+      <input id="searchInput" placeholder="What do you want to listen to?" type="text">
+    </div>
+  </header>
+
+  <main>
+    <div class="filters">
+      <button class="filter-btn active">All</button>
+      <button class="filter-btn">Music</button>
+      <button class="filter-btn">Podcasts</button>
+    </div>
+
+    <h2>Artists you like</h2>
+    <div class="artist-grid" id="artistsGrid"></div>
+
+    <h2>Jump back in</h2>
+    <div class="horizontal-scroll" id="mixesGrid"></div>
+
+    <h2>Start listening</h2>
+    <div id="tracksList"></div>
+  </main>
+
+  <div class="mini-player" id="miniPlayer" style="display:none">
+    <img id="miniCover" src="" alt="">
+    <div class="info">
+      <div id="miniTitle">—</div>
+      <div id="miniArtist" style="color:var(--text-sec); font-size:0.85rem;">—</div>
+    </div>
+    <div class="controls">
+      <button>⏮</button>
+      <button>▶</button>
+      <button>⏭</button>
+    </div>
   </div>
-  <div class="search-bar">
-    <input type="text" id="searchInput" placeholder="Search music or videos...">
-    <button id="searchBtn">Search</button>
+
+  <nav>
+    <button class="active">🏠</button>
+    <button>🔍</button>
+    <button>📚</button>
+    <button>⭐</button>
+    <button>+</button>
+  </nav>
+
+  <div id="playerModal">
+    <div class="modal-content">
+      <span class="close" onclick="document.getElementById('playerModal').style.display='none'">×</span>
+      <img id="coverImage" src="" alt="Cover" style="width:220px; border-radius:12px; margin:20px 0;">
+      <h2 id="mediaTitle">—</h2>
+      <p id="mediaArtist" style="color:var(--text-sec); margin:8px 0 20px;">—</p>
+      <audio id="audioPlayer" controls style="width:100%; margin:20px 0;"></audio>
+      <iframe id="videoPlayer" width="100%" height="240" style="display:none; border-radius:12px;" frameborder="0" allowfullscreen></iframe>
+    </div>
   </div>
-  <div class="source-buttons">
-    <button onclick="setSource('youtube')">YouTube</button>
-    <button onclick="setSource('spotify')">Spotify</button>
-    <button onclick="setSource('musicbrainz')">MusicBrainz</button>
-  </div>
-  <button id="themeToggle">Toggle Theme</button>
-</header>
 
-<!-- MAIN -->
-<main>
-  <section id="trending" class="grid"></section>
+  <script>
+    // Fake data simulation (replace with real API calls later)
+    window.onload = () => {
+      setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 1400);
 
-  <div id="searchHistory" class="history-panel">
-    <h3>Search History & Logs</h3>
-    <ul id="historyList"></ul>
-  </div>
+      // Artists you like
+      const artists = [
+        {name:"Olivetheboy", img:"https://i.scdn.co/image/..."}, // use real spotify-like images
+        {name:"BoyPee", img:"https://via.placeholder.com/140/222/fff?text=BoyPee"},
+        {name:"Hyce", img:"https://via.placeholder.com/140/222/fff?text=Hyce"},
+        {name:"Brown Joel", img:"https://via.placeholder.com/140/222/fff?text=Brown"}
+      ];
+      const ag = document.getElementById('artistsGrid');
+      artists.forEach(a => {
+        ag.innerHTML += `<div class="artist-card"><img src="\( {a.img}" alt=" \){a.name}"><p>${a.name}</p></div>`;
+      });
 
-  <div class="grid" id="resultsGrid"></div>
-</main>
+      // Mixes
+      const mixes = [
+        {title:"Olivetheboy Mix", img:"https://via.placeholder.com/160x160/333/fff?text=Olivetheboy"},
+        {title:"ODUMODUBLVCK Mix", img:"https://via.placeholder.com/160x160/333/fff?text=ODUMODU"},
+        {title:"Brown Joel Mix", img:"https://via.placeholder.com/160x160/333/fff?text=Brown+Joel"}
+      ];
+      const mg = document.getElementById('mixesGrid');
+      mixes.forEach(m => {
+        mg.innerHTML += `<div class="mix-card"><img src="\( {m.img}" alt=""><div class="label"> \){m.title}</div></div>`;
+      });
 
-<!-- PLAYER MODAL -->
-<div id="playerModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('playerModal')">×</span>
-    <h2 id="mediaTitle">Title</h2>
-    <p id="mediaArtist">Artist / Channel</p>
-    <img id="coverImage" src="https://via.placeholder.com/250" alt="Cover Art">
-    <audio id="audioPlayer" controls style="display:none;"></audio>
-    <iframe id="videoPlayer" width="100%" height="315" style="display:none;" frameborder="0" allowfullscreen></iframe>
-    <a id="downloadBtn" href="#" target="_blank" style="display:none;">Download</a>
-  </div>
-</div>
+      // Tracks
+      const tracks = [
+        {title:"Ogechi (feat. Davido) - Remix", artist:"BoyPee, Hyce, Brown Joel, Davido", img:"https://via.placeholder.com/50/222/fff?text=OG"},
+        {title:"WAIT FOR U (feat. Drake & Tems)", artist:"Future, Drake, Tems", img:"https://via.placeholder.com/50/222/fff?text=W4U"},
+        {title:"Run Away (OMALICHA)", artist:"Asylum, Olivetheboy", img:"https://via.placeholder.com/50/222/fff?text=RA"}
+      ];
+      const tl = document.getElementById('tracksList');
+      tracks.forEach(t => {
+        tl.innerHTML += `
+          <div class="track-item">
+            <img src="${t.img}" alt="">
+            <div class="track-info">
+              <h4>${t.title}</h4>
+              <p>${t.artist}</p>
+            </div>
+            <button style="background:none;border:none;color:var(--primary);font-size:1.4rem;">⋯</button>
+          </div>`;
+      });
+    };
 
-<!-- FOOTER -->
-<footer>
-  <p>StreamMe Music & Video 2026 — Created with ❤️ by Akewushola AbdulBakri Temitope</p>
-  <a href="about.html">About</a>
-</footer>
-
-<script src="/script.js"></script>
+    // Search simulation (connect to your /api endpoints later)
+    document.getElementById('searchInput').addEventListener('keypress', e => {
+      if (e.key === 'Enter') {
+        alert("Search: " + e.target.value + "\n(Connect your backend APIs here)");
+      }
+    });
+  </script>
 </body>
 </html>
