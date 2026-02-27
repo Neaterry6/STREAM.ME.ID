@@ -13,7 +13,6 @@ const API_KEY = 'qasim-dev';
 const HISTORY_FILE = path.join('./', 'history.json');
 
 // ----------- Utilities -----------
-
 function saveHistory(entry) {
   let history = [];
   if (fs.existsSync(HISTORY_FILE)) {
@@ -49,15 +48,15 @@ app.get('/api/yts/searchAll', async (req, res) => {
   res.json(data);
 });
 
-app.get('/api/yts/searchPlaylists', async (req, res) => {
-  const query = req.query.q || '';
-  const data = await fetchAPI(`https://api.qasimdev.dpdns.org/api/yts/searchPlaylists?apiKey=${API_KEY}&query=${query}`, 'YouTube Playlists');
-  res.json(data);
-});
-
 app.get('/api/yts/getVideo', async (req, res) => {
   const id = req.query.id || '';
   const data = await fetchAPI(`https://api.qasimdev.dpdns.org/api/yts/getVideo?apiKey=${API_KEY}&id=${id}`, 'YouTube Get Video');
+  res.json(data);
+});
+
+app.get('/api/yts/searchPlaylists', async (req, res) => {
+  const query = req.query.q || '';
+  const data = await fetchAPI(`https://api.qasimdev.dpdns.org/api/yts/searchPlaylists?apiKey=${API_KEY}&query=${query}`, 'YouTube Playlists');
   res.json(data);
 });
 
@@ -87,12 +86,6 @@ app.get('/api/musicbrainz/search', async (req, res) => {
   res.json(data);
 });
 
-app.get('/api/musicbrainz/artist', async (req, res) => {
-  const artist_id = req.query.artist_id || '';
-  const data = await fetchAPI(`https://api.qasimdev.dpdns.org/api/musicbrainz/artist?artist_id=${artist_id}&apiKey=${API_KEY}`, 'MusicBrainz Artist');
-  res.json(data);
-});
-
 app.get('/api/musicbrainz/artists', async (req, res) => {
   const query = req.query.q || '';
   const data = await fetchAPI(`https://api.qasimdev.dpdns.org/api/musicbrainz/artists?query=${query}&apiKey=${API_KEY}`, 'MusicBrainz Artists');
@@ -111,14 +104,20 @@ app.get('/api/musicbrainz/tracks', async (req, res) => {
   res.json(data);
 });
 
-// Loader / Download APIs
+app.get('/api/musicbrainz/artist', async (req, res) => {
+  const artist_id = req.query.artist_id || '';
+  const data = await fetchAPI(`https://api.qasimdev.dpdns.org/api/musicbrainz/artist?artist_id=${artist_id}&apiKey=${API_KEY}`, 'MusicBrainz Artist');
+  res.json(data);
+});
+
+// Loader / Download API
 app.get('/api/loaderto/download', async (req, res) => {
   const { url, format } = req.query;
   const data = await fetchAPI(`https://api.qasimdev.dpdns.org/api/loaderto/download?apiKey=${API_KEY}&url=${url}&format=${format}`, 'Loader Download');
   res.json(data);
 });
 
-// ------------------- History -------------------
+// History
 app.get('/api/history', (req, res) => {
   let history = [];
   if (fs.existsSync(HISTORY_FILE)) {
@@ -127,6 +126,6 @@ app.get('/api/history', (req, res) => {
   res.json(history);
 });
 
-// ------------------- Server -------------------
+// Server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => log(`Server running on port ${PORT}`));
