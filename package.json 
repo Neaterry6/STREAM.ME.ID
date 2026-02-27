@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node server/server.js"
   },
+  "author": "Akewushola AbdulBakri Temitope",
+  "license": "MIT",
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
