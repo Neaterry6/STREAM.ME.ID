@@ -1,0 +1,15 @@
+{
+  "name": "StreamMe",
+  "short_name": "StreamMe",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#1ed760",
+  "icons": [
+    {
+      "src": "https://i.ibb.co/Mx5q388P/your-logo.jpg",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
