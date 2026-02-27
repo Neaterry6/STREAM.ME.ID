@@ -1,146 +1,163 @@
-// ======== Variables ========
-const loadingScreen = document.getElementById('loadingScreen');
-const resultsGrid = document.getElementById('resultsGrid');
-const searchInput = document.getElementById('searchInput');
-const searchBtn = document.getElementById('searchBtn');
-const historyPanel = document.getElementById('searchHistory');
+let currentSource = 'youtube';
 
-const playerModal = document.getElementById('playerModal');
-const mediaTitle = document.getElementById('mediaTitle');
-const mediaArtist = document.getElementById('mediaArtist');
-const coverImage = document.getElementById('coverImage');
-const audioPlayer = document.getElementById('audioPlayer');
-const videoPlayer = document.getElementById('videoPlayer');
-const downloadBtn = document.getElementById('downloadBtn');
-
-let searchHistoryArr = JSON.parse(localStorage.getItem('searchHistory')) || [];
-
-// ======== Load trending on startup ========
-window.addEventListener('load', () => {
-  setTimeout(() => loadingScreen.style.display = 'none', 1000);
+// On load: hide loading screen, set background/logo, restore theme, load trending + history
+window.onload = () => {
+  setTimeout(() => document.getElementById('loadingScreen').style.display='none', 1500);
+  setBackgroundAndLogo();
+  restoreTheme();
   loadTrending();
-  renderHistory();
-});
+  loadHistory();
+};
 
-// ======== Load Trending Music & Video ========
-async function loadTrending() {
-  resultsGrid.innerHTML = "<p style='color:#fff'>Loading trending...</p>";
+document.getElementById('searchBtn').addEventListener('click', search);
+document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
+function setSource(source) {
+  currentSource = source;
+}
+
+// ------------------ SEARCH ------------------
+async function search() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q) return;
+  let url = '';
+  if (currentSource === 'youtube') {
+    url = `/api/yts/searchAll?q=${encodeURIComponent(q)}`;
+  } else if (currentSource === 'spotify') {
+    url = `/api/spotify/search?q=${encodeURIComponent(q)}`;
+  } else {
+    url = `/api/musicbrainz/search?q=${encodeURIComponent(q)}`;
+  }
   try {
-    const [yt, spotify] = await Promise.all([
-      fetch(`/api/yts/searchAll?query=trending`).then(r => r.json()),
-      fetch(`/api/spotify/search?q=trending`).then(r => r.json())
-    ]);
-
-    displayResults([...yt.results || [], ...spotify.results || []]);
-  } catch(err) {
-    resultsGrid.innerHTML = "<p style='color:red'>Error loading trending!</p>";
-    console.error(err);
+    const res = await fetch(url);
+    const data = await res.json();
+    renderResults(data, 'resultsGrid');
+    loadHistory();
+  } catch (err) {
+    document.getElementById('resultsGrid').innerHTML = `<p>Error fetching results.</p>`;
   }
 }
 
-// ======== Search ========
-searchBtn.addEventListener('click', () => {
-  const query = searchInput.value.trim();
-  if (!query) return;
-
-  saveHistory(query);
-  performSearch(query);
-});
-
-async function performSearch(query) {
-  resultsGrid.innerHTML = "<p style='color:#fff'>Searching...</p>";
-  try {
-    const [yt, spotify, mb] = await Promise.all([
-      fetch(`/api/yts/searchAll?query=${query}`).then(r => r.json()),
-      fetch(`/api/spotify/search?q=${query}`).then(r => r.json()),
-      fetch(`/api/musicbrainz/search?query=${query}`).then(r => r.json())
-    ]);
-
-    const combinedResults = [...yt.results || [], ...spotify.results || [], ...mb.results || []];
-    displayResults(combinedResults);
-  } catch(err) {
-    resultsGrid.innerHTML = "<p style='color:red'>Error fetching results!</p>";
-    console.error(err);
+// ------------------ RENDER ------------------
+function renderResults(data, targetId) {
+  const grid = document.getElementById(targetId);
+  grid.innerHTML = '';
+  const items = data.items || data.results || data.tracks || [];
+  if (!items.length) {
+    grid.innerHTML = '<p>No results found.</p>';
+    return;
   }
-}
-
-// ======== Display Results ========
-function displayResults(results) {
-  resultsGrid.innerHTML = '';
-  results.forEach(item => {
+  items.forEach(item => {
     const card = document.createElement('div');
     card.className = 'card';
-
-    const title = item.title || item.name || item.track;
-    const artist = item.artist || item.channel || item.artist_name || "Unknown";
-    const img = item.cover || item.thumbnail || 'https://via.placeholder.com/250';
-
     card.innerHTML = `
-      <img src="${img}" alt="${title}">
-      <h3>${title}</h3>
-      <p>${artist}</p>
-      <button onclick="openModal(${JSON.stringify(item)})">Play</button>
+      <img src="${item.thumbnail || 'https://via.placeholder.com/250'}" alt="cover">
+      <h3>${item.title || item.name || 'Untitled'}</h3>
+      <p>${item.artist || item.channel || ''}</p>
+      <button onclick='openPlayer(${JSON.stringify(item)})'>Play</button>
     `;
-
-    resultsGrid.appendChild(card);
+    grid.appendChild(card);
   });
 }
 
-// ======== Player Modal ========
-function openModal(item) {
-  playerModal.style.display = 'flex';
-  mediaTitle.textContent = item.title || item.name || item.track;
-  mediaArtist.textContent = item.artist || item.channel || item.artist_name || "Unknown";
-  coverImage.src = item.cover || item.thumbnail || 'https://via.placeholder.com/250';
-  
-  // Hide both
-  audioPlayer.style.display = 'none';
-  videoPlayer.style.display = 'none';
+// ------------------ PLAYER ------------------
+function openPlayer(item) {
+  document.getElementById('playerModal').style.display='flex';
+  document.getElementById('mediaTitle').innerText = item.title || item.name || 'Untitled';
+  document.getElementById('mediaArtist').innerText = item.artist || item.channel || '';
+  document.getElementById('coverImage').src = item.thumbnail || 'https://via.placeholder.com/250';
 
-  if(item.type === 'video' || item.video_url) {
-    videoPlayer.style.display = 'block';
-    videoPlayer.src = item.video_url || item.url;
+  const audio = document.getElementById('audioPlayer');
+  const video = document.getElementById('videoPlayer');
+  audio.style.display='none';
+  video.style.display='none';
+
+  if (item.url && (item.url.endsWith('.mp3') || item.url.includes('audio'))) {
+    audio.src = item.url;
+    audio.style.display='block';
+  } else if (item.videoId || item.videoUrl) {
+    // embed YouTube video if videoId exists
+    if (item.videoId) {
+      video.src = `https://www.youtube.com/embed/${item.videoId}`;
+    } else {
+      video.src = item.videoUrl;
+    }
+    video.style.display='block';
+  }
+
+  const downloadBtn = document.getElementById('downloadBtn');
+  if (item.downloadUrl) {
+    downloadBtn.href = item.downloadUrl;
+    downloadBtn.style.display = 'inline-block';
   } else {
-    audioPlayer.style.display = 'block';
-    audioPlayer.src = item.audio_url || item.url;
+    downloadBtn.href = '#';
+    downloadBtn.style.display = 'none';
   }
-
-  downloadBtn.href = item.download_url || item.url;
 }
 
-// ======== Close Modal ========
 function closeModal(id) {
-  const modal = document.getElementById(id);
-  modal.style.display = 'none';
-  audioPlayer.pause();
-  videoPlayer.src = '';
+  document.getElementById(id).style.display = 'none';
+  document.getElementById('audioPlayer').pause();
+  document.getElementById('videoPlayer').src = '';
 }
 
-// ======== Search History ========
-function saveHistory(query) {
-  if(!searchHistoryArr.includes(query)) {
-    searchHistoryArr.unshift(query);
-    if(searchHistoryArr.length > 10) searchHistoryArr.pop();
-    localStorage.setItem('searchHistory', JSON.stringify(searchHistoryArr));
-    renderHistory();
+// ------------------ THEME ------------------
+function toggleTheme() {
+  const body = document.body;
+  body.classList.toggle('light');
+  localStorage.setItem('theme', body.classList.contains('light') ? 'light' : 'dark');
+  applyTheme();
+}
+
+function restoreTheme() {
+  const saved = localStorage.getItem('theme');
+  if (saved === 'light') {
+    document.body.classList.add('light');
+  }
+  applyTheme();
+}
+
+function applyTheme() {
+  if (document.body.classList.contains('light')) {
+    document.body.style.backgroundColor = '#fff';
+    document.body.style.color = '#000';
+  } else {
+    document.body.style.backgroundColor = '#111';
+    document.body.style.color = '#fff';
   }
 }
 
-function renderHistory() {
-  historyPanel.innerHTML = '';
-  searchHistoryArr.forEach(q => {
-    const div = document.createElement('div');
-    div.textContent = q;
-    div.onclick = () => {
-      searchInput.value = q;
-      performSearch(q);
-    };
-    historyPanel.appendChild(div);
-  });
+// ------------------ HISTORY ------------------
+async function loadHistory() {
+  try {
+    const res = await fetch('/api/history');
+    const history = await res.json();
+    const list = document.getElementById('historyList');
+    list.innerHTML = '';
+    history.forEach(entry => {
+      const li = document.createElement('li');
+      li.textContent = `${entry.endpoint} → ${entry.query} (${new Date(entry.timestamp).toLocaleString()})`;
+      list.appendChild(li);
+    });
+  } catch(e){ console.error(e); }
 }
 
-// ======== Theme Toggle ========
-document.getElementById('themeToggle').addEventListener('click', () => {
-  document.body.classList.toggle('light');
-});
+// ------------------ TRENDING ------------------
+async function loadTrending() {
+  try {
+    // Example: load trending albums from MusicBrainz
+    const res = await fetch('/api/musicbrainz/albums?q=trending');
+    const data = await res.json();
+    renderResults(data, 'trending');
+  } catch(e){ console.error(e); }
+}
+
+// ------------------ BACKGROUND/LOGO ------------------
+async function setBackgroundAndLogo(){
+  try {
+    const res = await fetch('https://api.waifu.pics/sfw/waifu');
+    const data = await res.json();
+    document.body.style.backgroundImage = `url(${data.url})`;
+    document.getElementById('logoImg').src = data.url;
+  } catch(e){ console.error(e); }
+}
