@@ -1,13 +1,12 @@
 {
   "version": 2,
-  "name": "streamme-music",
   "builds": [
     {
       "src": "server/server.js",
       "use": "@vercel/node"
     },
     {
-      "src": "public/**",
+      "src": "public/**/*",
       "use": "@vercel/static"
     }
   ],
@@ -18,11 +17,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/public/$1"
+      "dest": "public/index.html"
     }
-  ],
-  "env": {
-    "QASIM_API_KEY": "qasim-dev",
-    "PORT": "3000"
-  }
+  ]
 }
