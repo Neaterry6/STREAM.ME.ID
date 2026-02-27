@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StreamMe • Music Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="logo">StreamMe</div>
+    <div class="loader"></div>
+  </div>
+
+  <!-- Main App -->
+  <div id="app" class="hidden">
+    <header>
+      <div class="logo">StreamMe</div>
+      <input type="text" id="searchInput" placeholder="Search for songs, albums, artists..." />
+    </header>
+
+    <main>
+      <section class="section" id="trendingSongs">
+        <h2>Trending Songs</h2>
+        <div class="items" id="songsContainer"></div>
+      </section>
+
+      <section class="section" id="trendingAlbums">
+        <h2>Trending Albums</h2>
+        <div class="items" id="albumsContainer"></div>
+      </section>
+
+      <section class="section" id="historySection">
+        <h2>Your Search History</h2>
+        <ul id="historyList"></ul>
+      </section>
+    </main>
+
+    <!-- Player Modal -->
+    <div id="playerModal" class="modal hidden">
+      <div class="modal-content">
+        <span class="close" id="closeModal">&times;</span>
+        <h3 id="modalTitle"></h3>
+        <audio id="audioPlayer" controls></audio>
+        <a id="downloadBtn" class="btn" target="_blank">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>
