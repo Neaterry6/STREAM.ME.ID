@@ -3,52 +3,141 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StreamMe • Music Hub</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <title>StreamMe - Music Streaming</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <!-- Loading Screen -->
   <div id="loading-screen">
-    <div class="logo">StreamMe</div>
+    <svg id="logo" width="150" height="150" viewBox="0 0 150 150">
+      <circle cx="75" cy="75" r="70" stroke="#1DB954" stroke-width="5" fill="none"/>
+      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="24" fill="#fff" font-weight="700">StreamMe</text>
+    </svg>
     <div class="loader"></div>
   </div>
 
   <!-- Main App -->
   <div id="app" class="hidden">
     <header>
-      <div class="logo">StreamMe</div>
-      <input type="text" id="searchInput" placeholder="Search for songs, albums, artists..." />
+      <h1>StreamMe</h1>
+      <input type="text" id="searchInput" placeholder="Search songs, albums, artists...">
     </header>
 
     <main>
-      <section class="section" id="trendingSongs">
+      <!-- Trending Songs -->
+      <section class="section">
         <h2>Trending Songs</h2>
-        <div class="items" id="songsContainer"></div>
+        <div class="items" id="trendingSongs"></div>
       </section>
 
-      <section class="section" id="trendingAlbums">
+      <!-- Trending Albums -->
+      <section class="section">
         <h2>Trending Albums</h2>
-        <div class="items" id="albumsContainer"></div>
+        <div class="items" id="trendingAlbums"></div>
       </section>
 
-      <section class="section" id="historySection">
-        <h2>Your Search History</h2>
-        <ul id="historyList"></ul>
+      <!-- Playlists -->
+      <section class="section">
+        <h2>Playlists</h2>
+        <div class="items" id="playlistsContainer"></div>
       </section>
     </main>
 
     <!-- Player Modal -->
     <div id="playerModal" class="modal hidden">
       <div class="modal-content">
-        <span class="close" id="closeModal">&times;</span>
         <h3 id="modalTitle"></h3>
         <audio id="audioPlayer" controls></audio>
-        <a id="downloadBtn" class="btn" target="_blank">Download</a>
+        <a id="downloadBtn" href="#" download class="btn">Download</a>
+        <button id="closeModal" class="btn">Close</button>
       </div>
     </div>
   </div>
 
-  <script src="app.js" type="module"></script>
+  <script>
+    const API_BASE = "https://api.qasimdev.dpdns.org/api";
+
+    const app = document.getElementById("app");
+    const loadingScreen = document.getElementById("loading-screen");
+
+    // Show app after loading
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        loadingScreen.classList.add("hidden");
+        app.classList.remove("hidden");
+        loadTrending();
+      }, 1500);
+    });
+
+    const trendingSongs = document.getElementById("trendingSongs");
+    const trendingAlbums = document.getElementById("trendingAlbums");
+    const playlistsContainer = document.getElementById("playlistsContainer");
+    const playerModal = document.getElementById("playerModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const audioPlayer = document.getElementById("audioPlayer");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const closeModal = document.getElementById("closeModal");
+
+    closeModal.addEventListener("click", () => playerModal.classList.add("hidden"));
+
+    async function loadTrending() {
+      loadSection(trendingSongs, `${API_BASE}/yts/searchVideos?query=trending`);
+      loadSection(trendingAlbums, `${API_BASE}/yts/searchAll?query=trending albums`);
+      loadPlaylists();
+    }
+
+    async function loadSection(container, url) {
+      container.innerHTML = "Loading...";
+      const res = await fetch(url);
+      const data = await res.json();
+      container.innerHTML = "";
+      data.videos?.forEach(item => {
+        const div = document.createElement("div");
+        div.classList.add("item");
+        div.innerHTML = `
+          <img src="${item.thumbnail}" />
+          <h4>${item.title}</h4>
+        `;
+        div.addEventListener("click", () => openPlayer(item));
+        container.appendChild(div);
+      });
+    }
+
+    async function loadPlaylists(query="top") {
+      playlistsContainer.innerHTML = "Loading...";
+      const res = await fetch(`${API_BASE}/yts/searchPlaylists?query=${query}`);
+      const data = await res.json();
+      playlistsContainer.innerHTML = "";
+      data.playlists?.forEach(pl => {
+        const div = document.createElement("div");
+        div.classList.add("item");
+        div.innerHTML = `
+          <img src="${pl.thumbnail}" />
+          <h4>${pl.title}</h4>
+          <p>${pl.channel}</p>
+        `;
+        div.addEventListener("click", () => openPlayer(pl));
+        playlistsContainer.appendChild(div);
+      });
+    }
+
+    function openPlayer(item) {
+      modalTitle.textContent = item.title || item.name;
+      audioPlayer.src = item.preview_url || "";
+      downloadBtn.href = item.download_url || "#";
+      playerModal.classList.remove("hidden");
+    }
+
+    // Search
+    const searchInput = document.getElementById("searchInput");
+    searchInput.addEventListener("keypress", e => {
+      if (e.key === "Enter") {
+        const q = searchInput.value;
+        loadSection(trendingSongs, `${API_BASE}/yts/searchVideos?query=${encodeURIComponent(q)}`);
+        loadSection(trendingAlbums, `${API_BASE}/yts/searchAll?query=${encodeURIComponent(q)}`);
+        loadPlaylists(q);
+      }
+    });
+  </script>
 </body>
 </html>
