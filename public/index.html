@@ -1,143 +1,195 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StreamMe - Music Streaming</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreamMe - Music & Videos</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.3/dist/tailwind.min.css" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <!-- Loading Screen -->
-  <div id="loading-screen">
-    <svg id="logo" width="150" height="150" viewBox="0 0 150 150">
-      <circle cx="75" cy="75" r="70" stroke="#1DB954" stroke-width="5" fill="none"/>
-      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="24" fill="#fff" font-weight="700">StreamMe</text>
-    </svg>
-    <div class="loader"></div>
-  </div>
+<body class="bg-gray-900 text-white font-sans">
 
-  <!-- Main App -->
-  <div id="app" class="hidden">
-    <header>
-      <h1>StreamMe</h1>
-      <input type="text" id="searchInput" placeholder="Search songs, albums, artists...">
-    </header>
+<!-- Loading Screen -->
+<div id="loadingScreen" class="fixed inset-0 bg-gray-900 flex flex-col justify-center items-center z-50">
+    <div class="logo text-4xl font-bold mb-4 animate-bounce">🎵 StreamMe</div>
+    <div class="loader w-12 h-12 border-4 border-t-cyan-400 border-gray-700 rounded-full animate-spin"></div>
+</div>
 
-    <main>
-      <!-- Trending Songs -->
-      <section class="section">
-        <h2>Trending Songs</h2>
-        <div class="items" id="trendingSongs"></div>
-      </section>
+<!-- Main Container -->
+<div id="mainContainer" class="hidden min-h-screen flex flex-col">
 
-      <!-- Trending Albums -->
-      <section class="section">
-        <h2>Trending Albums</h2>
-        <div class="items" id="trendingAlbums"></div>
-      </section>
-
-      <!-- Playlists -->
-      <section class="section">
-        <h2>Playlists</h2>
-        <div class="items" id="playlistsContainer"></div>
-      </section>
-    </main>
-
-    <!-- Player Modal -->
-    <div id="playerModal" class="modal hidden">
-      <div class="modal-content">
-        <h3 id="modalTitle"></h3>
-        <audio id="audioPlayer" controls></audio>
-        <a id="downloadBtn" href="#" download class="btn">Download</a>
-        <button id="closeModal" class="btn">Close</button>
+  <!-- Header -->
+  <header class="bg-gray-800 p-4 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-lg">
+      <div class="text-3xl font-bold text-cyan-400">🎵 StreamMe</div>
+      <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <input type="text" id="searchInput" placeholder="Search music or videos..." class="rounded-full px-4 py-2 flex-1 bg-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-white">
+          <button id="searchBtn" class="bg-cyan-400 hover:bg-cyan-500 px-4 py-2 rounded-full font-bold text-black">Search</button>
       </div>
-    </div>
+  </header>
+
+  <!-- Search History -->
+  <section class="p-4">
+      <h2 class="text-xl font-bold mb-2">Search History</h2>
+      <div id="searchHistory" class="flex flex-wrap gap-2"></div>
+  </section>
+
+  <!-- Dashboard Sections -->
+  <main class="p-4 flex flex-col gap-6">
+
+    <section>
+      <h2 class="text-xl font-bold mb-4">Trending Songs</h2>
+      <div id="trendingSongs" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>
+    </section>
+
+    <section>
+      <h2 class="text-xl font-bold mb-4">Trending Albums</h2>
+      <div id="trendingAlbums" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>
+    </section>
+
+    <section>
+      <h2 class="text-xl font-bold mb-4">Trending Playlists</h2>
+      <div id="trendingPlaylists" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>
+    </section>
+
+  </main>
+
+</div>
+
+<!-- Audio Player Modal -->
+<div id="playerModal" class="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center hidden z-50 p-4">
+  <div class="bg-gray-800 rounded-2xl p-6 w-full max-w-lg flex flex-col gap-4">
+      <h2 id="songTitle" class="text-2xl font-bold text-cyan-400"></h2>
+      <p id="songArtists" class="text-gray-300"></p>
+      <img id="coverImage" src="https://via.placeholder.com/300" class="rounded-xl mx-auto w-64 h-64 object-cover">
+      <audio id="audioPlayer" controls class="w-full mt-4"></audio>
+      <button onclick="closePlayer()" class="mt-4 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full">Close</button>
   </div>
+</div>
 
-  <script>
-    const API_BASE = "https://api.qasimdev.dpdns.org/api";
+<script>
+const API_KEY = 'qasim-dev';
+const API_BASE = 'https://api.qasimdev.dpdns.org/api';
 
-    const app = document.getElementById("app");
-    const loadingScreen = document.getElementById("loading-screen");
+// Elements
+const searchInput = document.getElementById("searchInput");
+const searchBtn = document.getElementById("searchBtn");
+const searchHistoryContainer = document.getElementById("searchHistory");
+const trendingSongs = document.getElementById("trendingSongs");
+const trendingAlbums = document.getElementById("trendingAlbums");
+const trendingPlaylists = document.getElementById("trendingPlaylists");
+const playerModal = document.getElementById("playerModal");
+const songTitle = document.getElementById("songTitle");
+const songArtists = document.getElementById("songArtists");
+const audioPlayer = document.getElementById("audioPlayer");
+const coverImage = document.getElementById("coverImage");
+const loadingScreen = document.getElementById("loadingScreen");
+const mainContainer = document.getElementById("mainContainer");
 
-    // Show app after loading
-    window.addEventListener("load", () => {
-      setTimeout(() => {
-        loadingScreen.classList.add("hidden");
-        app.classList.remove("hidden");
-        loadTrending();
-      }, 1500);
-    });
+// Local Storage Search History
+let searchHistory = JSON.parse(localStorage.getItem("searchHistory") || "[]");
+renderHistory();
 
-    const trendingSongs = document.getElementById("trendingSongs");
-    const trendingAlbums = document.getElementById("trendingAlbums");
-    const playlistsContainer = document.getElementById("playlistsContainer");
-    const playerModal = document.getElementById("playerModal");
-    const modalTitle = document.getElementById("modalTitle");
-    const audioPlayer = document.getElementById("audioPlayer");
-    const downloadBtn = document.getElementById("downloadBtn");
-    const closeModal = document.getElementById("closeModal");
+function renderHistory(){
+  searchHistoryContainer.innerHTML = "";
+  if(searchHistory.length === 0){
+    searchHistoryContainer.innerHTML = "<p class='text-gray-400'>No searches yet</p>";
+    return;
+  }
+  searchHistory.slice().reverse().forEach(term => {
+    const div = document.createElement("div");
+    div.textContent = term;
+    div.className = "bg-gray-700 px-3 py-1 rounded-full cursor-pointer hover:bg-gray-600";
+    div.onclick = () => performSearch(term);
+    searchHistoryContainer.appendChild(div);
+  });
+}
 
-    closeModal.addEventListener("click", () => playerModal.classList.add("hidden"));
+function addToHistory(term){
+  if(!term) return;
+  if(!searchHistory.includes(term)){
+    searchHistory.push(term);
+    if(searchHistory.length > 20) searchHistory.shift();
+    localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
+    renderHistory();
+  }
+}
 
-    async function loadTrending() {
-      loadSection(trendingSongs, `${API_BASE}/yts/searchVideos?query=trending`);
-      loadSection(trendingAlbums, `${API_BASE}/yts/searchAll?query=trending albums`);
-      loadPlaylists();
-    }
+// Player Functions
+function playMedia(title, artist, audioUrl, cover){
+  songTitle.textContent = title;
+  songArtists.textContent = artist;
+  coverImage.src = cover || "https://via.placeholder.com/300";
+  audioPlayer.src = audioUrl;
+  playerModal.classList.remove("hidden");
+  audioPlayer.play();
+}
 
-    async function loadSection(container, url) {
-      container.innerHTML = "Loading...";
-      const res = await fetch(url);
-      const data = await res.json();
-      container.innerHTML = "";
-      data.videos?.forEach(item => {
-        const div = document.createElement("div");
-        div.classList.add("item");
-        div.innerHTML = `
-          <img src="${item.thumbnail}" />
-          <h4>${item.title}</h4>
+function closePlayer(){
+  audioPlayer.pause();
+  audioPlayer.src = "";
+  playerModal.classList.add("hidden");
+}
+
+// Fetch Sections
+async function loadSection(container, url){
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    container.innerHTML = "";
+    if(data.items?.length){
+      data.items.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "bg-gray-700 rounded-xl overflow-hidden cursor-pointer hover:scale-105 transform transition";
+        card.innerHTML = `
+          <img src="${item.thumbnail || 'https://via.placeholder.com/300'}" class="w-full h-32 object-cover">
+          <div class="p-2">
+            <h3 class="text-sm font-bold">${item.title}</h3>
+            <p class="text-gray-400 text-xs">${item.author || 'Unknown'}</p>
+          </div>
         `;
-        div.addEventListener("click", () => openPlayer(item));
-        container.appendChild(div);
+        card.onclick = () => playMedia(item.title, item.author || 'Unknown', item.url, item.thumbnail);
+        container.appendChild(card);
       });
+    } else {
+      container.innerHTML = "<p class='text-gray-400'>No items found</p>";
     }
+  } catch(err){
+    console.error(err);
+    container.innerHTML = "<p class='text-red-500'>Error loading section</p>";
+  }
+}
 
-    async function loadPlaylists(query="top") {
-      playlistsContainer.innerHTML = "Loading...";
-      const res = await fetch(`${API_BASE}/yts/searchPlaylists?query=${query}`);
-      const data = await res.json();
-      playlistsContainer.innerHTML = "";
-      data.playlists?.forEach(pl => {
-        const div = document.createElement("div");
-        div.classList.add("item");
-        div.innerHTML = `
-          <img src="${pl.thumbnail}" />
-          <h4>${pl.title}</h4>
-          <p>${pl.channel}</p>
-        `;
-        div.addEventListener("click", () => openPlayer(pl));
-        playlistsContainer.appendChild(div);
-      });
-    }
+// Initial Load
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    loadingScreen.classList.add("hidden");
+    mainContainer.classList.remove("hidden");
+    // Auto-load trending content
+    loadSection(trendingSongs, `${API_BASE}/yts/searchVideos?apiKey=${API_KEY}&query=trending`);
+    loadSection(trendingAlbums, `${API_BASE}/yts/searchAll?apiKey=${API_KEY}&query=trending albums`);
+    loadSection(trendingPlaylists, `${API_BASE}/yts/searchPlaylists?apiKey=${API_KEY}&query=top playlists`);
+  }, 1500);
+});
 
-    function openPlayer(item) {
-      modalTitle.textContent = item.title || item.name;
-      audioPlayer.src = item.preview_url || "";
-      downloadBtn.href = item.download_url || "#";
-      playerModal.classList.remove("hidden");
-    }
+// Search
+searchBtn.addEventListener("click", () => {
+  const q = searchInput.value.trim();
+  if(!q) return;
+  addToHistory(q);
+  performSearch(q);
+});
 
-    // Search
-    const searchInput = document.getElementById("searchInput");
-    searchInput.addEventListener("keypress", e => {
-      if (e.key === "Enter") {
-        const q = searchInput.value;
-        loadSection(trendingSongs, `${API_BASE}/yts/searchVideos?query=${encodeURIComponent(q)}`);
-        loadSection(trendingAlbums, `${API_BASE}/yts/searchAll?query=${encodeURIComponent(q)}`);
-        loadPlaylists(q);
-      }
-    });
-  </script>
+searchInput.addEventListener("keypress", e => {
+  if(e.key === "Enter") searchBtn.click();
+});
+
+function performSearch(q){
+  addToHistory(q);
+  loadSection(trendingSongs, `${API_BASE}/yts/searchVideos?apiKey=${API_KEY}&query=${encodeURIComponent(q)}`);
+  loadSection(trendingAlbums, `${API_BASE}/yts/searchAll?apiKey=${API_KEY}&query=${encodeURIComponent(q)}`);
+  loadSection(trendingPlaylists, `${API_BASE}/yts/searchPlaylists?apiKey=${API_KEY}&query=${encodeURIComponent(q)}`);
+}
+</script>
 </body>
 </html>
