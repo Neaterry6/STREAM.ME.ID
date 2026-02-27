@@ -1,3 +1,11 @@
+
+Here’s the updated HTML with:
+
+- Source selector buttons (Spotify / YouTube / MusicBrainz)
+- Audio + video playback in modal
+- Download button kept
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,64 +14,48 @@
   <title>StreamMe Music & Video 2026</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #000;
-      --card: #121212;
-      --text: #fff;
-      --text-sec: #b3b3b3;
-      --primary: #1db954;
-    }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 140px; }
-    #loadingScreen { position:fixed; inset:0; background:#000; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; }
-    .logo-animation img { width:90px; height:90px; border-radius:50%; margin-bottom:16px; }
-    #loadingScreen p { font-size:1.1rem; font-weight:600; color:var(--primary); }
-
-    header { position:fixed; top:0; left:0; right:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); padding:12px 16px; z-index:100; display:flex; align-items:center; gap:12px; }
-    .logo { width:38px; height:38px; border-radius:50%; }
-    .search-bar { flex:1; background:var(--card); border-radius:50px; padding:8px 16px; display:flex; align-items:center; }
-    .search-bar input { background:transparent; border:none; color:white; flex:1; font-size:0.95rem; }
-    .search-bar input::placeholder { color:var(--text-sec); }
-
-    main { padding:70px 16px 16px; }
-    h2 { font-size:1.4rem; margin:24px 0 12px; font-weight:600; }
-    .filters { display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap; }
-    .filter-btn { padding:6px 16px; border-radius:30px; background:var(--card); color:var(--text); border:none; font-weight:500; cursor:pointer; }
-    .filter-btn.active { background:var(--primary); color:black; }
-
-    .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(160px,1fr)); gap:16px; }
-    .card { background:var(--card); border-radius:12px; overflow:hidden; text-align:center; cursor:pointer; transition:transform 0.2s; }
-    .card:hover { transform:scale(1.04); }
-    .card img { width:100%; aspect-ratio:1; object-fit:cover; }
-    .card-info { padding:10px; }
-    .card-title { font-size:0.95rem; margin-bottom:4px; }
-    .card-artist { font-size:0.85rem; color:var(--text-sec); }
-    .card-actions { padding:0 10px 10px; display:flex; gap:8px; justify-content:center; }
-    .btn { padding:6px 12px; border:none; border-radius:20px; font-size:0.8rem; cursor:pointer; }
-    .btn-play { background:var(--primary); color:black; }
-    .btn-download { background:#444; color:white; text-decoration:none; }
-
-    .mini-player { position:fixed; bottom:70px; left:0; right:0; background:rgba(30,30,30,0.95); backdrop-filter:blur(12px); padding:10px 16px; display:flex; align-items:center; gap:12px; border-top:1px solid #222; display:none; }
-    .mini-player img { width:50px; height:50px; border-radius:6px; object-fit:cover; }
-    .mini-player .info { flex:1; }
-    nav { position:fixed; bottom:0; left:0; right:0; background:#000; border-top:1px solid #222; display:flex; justify-content:space-around; padding:10px 0; z-index:100; }
-    nav button { background:none; border:none; color:var(--text-sec); font-size:1.6rem; cursor:pointer; }
-    nav button.active { color:var(--primary); }
-
-    #playerModal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:200; align-items:center; justify-content:center; }
-    .modal-content { background:#181818; width:90%; max-width:420px; border-radius:16px; padding:24px; text-align:center; position:relative; }
-    .close { position:absolute; top:16px; right:20px; font-size:2rem; cursor:pointer; }
-    footer { text-align:center; padding:20px; color:var(--text-sec); font-size:0.9rem; }
-    footer a { color:var(--primary); margin:0 10px; text-decoration:none; }
+    :root{--bg:#000;--card:#121212;--text:#fff;--text-sec:#b3b3b3;--primary:#1db954;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:100px;}
+    #loadingScreen{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;}
+    .logo-animation img{width:90px;height:90px;border-radius:50%;margin-bottom:16px;}
+    #loadingScreen p{font-size:1.1rem;font-weight:600;color:var(--primary);}
+    header{position:fixed;top:0;left:0;right:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);padding:12px 16px;z-index:100;display:flex;align-items:center;gap:12px;}
+    .logo{width:38px;height:38px;border-radius:50%;}
+    .search-bar{flex:1;background:var(--card);border-radius:50px;padding:8px 16px;display:flex;align-items:center;}
+    .search-bar input{background:transparent;border:none;color:white;flex:1;font-size:0.95rem;}
+    .search-bar input::placeholder{color:var(--text-sec);}
+    .source-filters{display:flex;gap:8px;margin:80px 16px 16px;flex-wrap:wrap;}
+    .source-btn{padding:8px 16px;border-radius:30px;background:var(--card);color:var(--text);border:none;font-weight:500;cursor:pointer;}
+    .source-btn.active{background:var(--primary);color:black;}
+    main{padding:0 16px 100px;}
+    h2{font-size:1.4rem;margin:24px 0 12px;font-weight:600;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;}
+    .card{background:var(--card);border-radius:12px;overflow:hidden;text-align:center;cursor:pointer;transition:transform 0.2s;}
+    .card:hover{transform:scale(1.04);}
+    .card img{width:100%;aspect-ratio:1;object-fit:cover;}
+    .card-info{padding:10px;}
+    .card-title{font-size:0.95rem;margin-bottom:4px;}
+    .card-artist{font-size:0.85rem;color:var(--text-sec);}
+    .card-actions{padding:0 10px 12px;display:flex;gap:8px;justify-content:center;}
+    .btn{padding:6px 12px;border:none;border-radius:20px;font-size:0.8rem;cursor:pointer;}
+    .btn-play{background:var(--primary);color:black;}
+    .btn-download{background:#444;color:white;text-decoration:none;}
+    #playerModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:200;align-items:center;justify-content:center;}
+    .modal-content{background:#181818;width:90%;max-width:500px;border-radius:16px;padding:24px;text-align:center;position:relative;}
+    .close{position:absolute;top:16px;right:20px;font-size:2.2rem;cursor:pointer;color:#aaa;}
+    audio, iframe{width:100%;margin:20px 0;border-radius:8px;}
+    footer{text-align:center;padding:20px;color:var(--text-sec);font-size:0.9rem;}
+    footer a{color:var(--primary);margin:0 10px;text-decoration:none;}
   </style>
 </head>
 <body>
 
   <div id="loadingScreen">
     <div class="logo-animation">
-      <img src="https://i.ibb.co/Mx5q388P/your-logo.jpg" alt="Logo"> <!-- replace with real direct link -->
+      <img src="https://i.ibb.co/Mx5q388P/your-logo.jpg" alt="Logo">
     </div>
-    <p>StreamMe Music & Video 2026</p>
+    <p>Loading trending...</p>
   </div>
 
   <header>
@@ -73,44 +65,28 @@
     </div>
   </header>
 
-  <main>
-    <div class="filters">
-      <button class="filter-btn active" onclick="setSource('spotify')">Spotify</button>
-      <button class="filter-btn" onclick="setSource('youtube')">YouTube</button>
-      <button class="filter-btn" onclick="setSource('musicbrainz')">MusicBrainz</button>
-    </div>
+  <div class="source-filters">
+    <button class="source-btn active" onclick="setSource('spotify')">Spotify</button>
+    <button class="source-btn" onclick="setSource('youtube')">YouTube</button>
+    <button class="source-btn" onclick="setSource('musicbrainz')">MusicBrainz</button>
+  </div>
 
-    <h2>Trending</h2>
+  <main id="mainContent" style="display:none;">
+    <h2>Trending Albums</h2>
     <div id="trendingGrid" class="grid"></div>
 
-    <h2>Results</h2>
+    <h2>Search Results</h2>
     <div id="resultsGrid" class="grid"></div>
   </main>
 
-  <div class="mini-player" id="miniPlayer">
-    <img id="miniCover" src="" alt="">
-    <div class="info">
-      <div id="miniTitle">—</div>
-      <div id="miniArtist" style="color:var(--text-sec); font-size:0.85rem;">—</div>
-    </div>
-  </div>
-
-  <nav>
-    <button class="active">🏠</button>
-    <button>🔍</button>
-    <button>📚</button>
-    <button>⭐</button>
-    <button>+</button>
-  </nav>
-
   <div id="playerModal">
     <div class="modal-content">
-      <span class="close" onclick="document.getElementById('playerModal').style.display='none'">×</span>
-      <img id="coverImage" src="" alt="Cover" style="width:220px; border-radius:12px; margin:20px 0;">
+      <span class="close" onclick="closePlayer()">×</span>
+      <img id="coverImage" src="" alt="Cover" style="width:220px;border-radius:12px;margin:0 auto 20px;display:block;">
       <h2 id="mediaTitle">—</h2>
-      <p id="mediaArtist" style="color:var(--text-sec); margin:8px 0 20px;">—</p>
-      <audio id="audioPlayer" controls style="width:100%; margin:20px 0; display:none;"></audio>
-      <iframe id="videoPlayer" width="100%" height="240" style="display:none; border-radius:12px;" frameborder="0" allowfullscreen></iframe>
+      <p id="mediaArtist" style="color:var(--text-sec);margin:8px 0 20px;">—</p>
+      <audio id="audioPlayer" controls></audio>
+      <iframe id="videoPlayer" frameborder="0" allowfullscreen></iframe>
     </div>
   </div>
 
@@ -124,41 +100,39 @@
 
     function setSource(src) {
       currentSource = src;
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
       event.target.classList.add('active');
     }
 
     async function fetchAndRender(url, gridId) {
       try {
         const res = await fetch(url);
-        if (!res.ok) throw new Error();
         const data = await res.json();
         const grid = document.getElementById(gridId);
         grid.innerHTML = '';
         const items = data.items || data.results || data.albums || data.tracks || data || [];
-        items.slice(0, 12).forEach(item => {  // limit to reasonable number
+        items.slice(0,12).forEach(item => {
           const title  = item.title || item.name || 'Unknown';
-          const artist = item.artist || item.channel || item.artists?.[0]?.name || '';
-          const img    = item.thumbnail || item.images?.[0]?.url || item.album?.images?.[0]?.url || 'https://via.placeholder.com/160';
-          const id     = item.id || item.videoId || item.track_id || '';
-          const downloadUrl = currentSource === 'spotify' ? `/api/spotify/download?url=${encodeURIComponent(item.external_urls?.spotify || item.url || '')}` :
-                              currentSource === 'youtube' ? `/api/yts/getVideo?id=${id}` : '#';
+          const artist = item.artist || item.artists?.[0]?.name || item.channel || '';
+          const img    = item.images?.[0]?.url || item.thumbnail || 'https://via.placeholder.com/160';
+          const id     = item.id || item.videoId || '';
+          const dlUrl  = currentSource === 'spotify' ? `/api/spotify/download?url=${encodeURIComponent(item.url||'')}` :
+                         currentSource === 'youtube' ? `/api/yts/getVideo?id=${id}` : '#';
 
-          const card = `
-            <div class="card" onclick="playMedia('\( {id}', ' \){title}', '\( {artist}', ' \){img}')">
-              <img src="\( {img}" alt=" \){title}">
+          grid.innerHTML += `
+            <div class="card">
+              <img src="${img}" alt="${title}">
               <div class="card-info">
                 <div class="card-title">${title}</div>
                 <div class="card-artist">${artist}</div>
               </div>
               <div class="card-actions">
-                <button class="btn btn-play">Play</button>
-                <a href="${downloadUrl}" target="_blank" class="btn btn-download">Download</a>
+                <button class="btn btn-play" onclick="playMedia('${id}','${title}','${artist}','${img}')">Play</button>
+                <a href="${dlUrl}" target="_blank" class="btn btn-download">Download</a>
               </div>
             </div>`;
-          grid.innerHTML += card;
         });
-      } catch (e) {
+      } catch(e) {
         document.getElementById(gridId).innerHTML = '<p>Error loading</p>';
       }
     }
@@ -172,22 +146,26 @@
       const video = document.getElementById('videoPlayer');
       audio.style.display = 'none';
       video.style.display = 'none';
+      audio.pause();
+      audio.src = '';
+      video.src = '';
 
       if (currentSource === 'youtube' && id) {
-        video.src = `https://www.youtube.com/embed/${id}`;
+        video.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
         video.style.display = 'block';
       } else {
-        // Spotify/MB: audio src needs real stream URL from download endpoint
-        audio.src = ''; // Fetch from /api/spotify/download or similar if returns stream
+        // Spotify / MusicBrainz → placeholder (real stream URL needed from your API)
+        audio.src = ''; // ← replace with real audio stream link when available
         audio.style.display = 'block';
       }
 
       document.getElementById('playerModal').style.display = 'flex';
+    }
 
-      document.getElementById('miniTitle').textContent = title;
-      document.getElementById('miniArtist').textContent = artist;
-      document.getElementById('miniCover').src = img;
-      document.getElementById('miniPlayer').style.display = 'flex';
+    function closePlayer() {
+      document.getElementById('playerModal').style.display = 'none';
+      document.getElementById('audioPlayer').pause();
+      document.getElementById('videoPlayer').src = '';
     }
 
     document.getElementById('searchInput').addEventListener('keypress', e => {
@@ -202,9 +180,10 @@
       }
     });
 
-    window.onload = () => {
-      setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 1400);
-      fetchAndRender('/api/musicbrainz/albums?q=trending', 'trendingGrid');
+    window.onload = async () => {
+      await fetchAndRender('/api/musicbrainz/albums?q=trending', 'trendingGrid');
+      document.getElementById('loadingScreen').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
     };
   </script>
 </body>
