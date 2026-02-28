@@ -7,241 +7,172 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root{
-  --bg:#000; --card:#121212; --text:#fff; --sec:#b3b3b3; --orange:#ff9500;
+--bg:#000;--card:#121212;--text:#fff;--sec:#aaa;--orange:#ff9500;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:140px;}
-
-#loaderScreen{
-  position:fixed; inset:0; background:#000; display:flex; align-items:center; justify-content:center; z-index:9999; flex-direction:column;
+body{font-family:system-ui;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:120px;}
+header{position:fixed;top:0;left:0;right:0;background:#000;padding:12px;display:flex;gap:10px;z-index:100;}
+.logo{width:40px;height:40px;border-radius:50%;background:url('https://i.ibb.co/Mx5q388P/logo.png') center/cover no-repeat;}
+.search{flex:1;display:flex;background:var(--card);border-radius:999px;overflow:hidden;}
+.search input{flex:1;border:none;background:transparent;color:#fff;padding:10px;}
+.search button{background:var(--orange);border:none;padding:10px 14px;cursor:pointer;}
+main{padding:80px 16px;}
+.track{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #222;cursor:pointer;}
+.track img{width:80px;height:80px;border-radius:8px;object-fit:cover;}
+.track h4{font-size:0.9rem;}
+.track p{font-size:0.75rem;color:var(--sec);}
+#centerLoader{
+position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:200;background:#000;
 }
-#loaderScreen img{
-  width:120px; height:120px; border-radius:12px; animation: glow 1.5s infinite;
+#centerLoader img{
+width:120px;animation:glow 1.5s ease-in-out infinite alternate;
 }
 @keyframes glow{
-  0%,100%{opacity:0.2;}
-  50%{opacity:1;}
+from{opacity:0.4;transform:scale(0.95);}
+to{opacity:1;transform:scale(1.05);}
 }
-#loaderScreen p{margin-top:16px; color:#fff; font-weight:600;}
-
-header{position:fixed;top:0;left:0;right:0;background:rgba(0,0,0,0.9);backdrop-filter:blur(10px);padding:12px 16px;z-index:100;display:flex;gap:12px;align-items:center;}
-.logo{width:38px;height:38px;border-radius:50%;background:#444; background-image:url('https://i.ibb.co/Mx5q388P'); background-size:cover;}
-.search{flex:1;background:var(--card);border-radius:999px;padding:6px 12px;display:flex;align-items:center;}
-.search input{flex:1;background:transparent;border:none;color:#fff;font-size:0.95rem;padding:6px;}
-.search button{margin-left:6px;padding:6px 10px;background:var(--orange);border:none;color:#000;border-radius:6px;cursor:pointer;}
-.filters{position:sticky;top:64px;background:var(--bg);padding:16px 16px 8px;z-index:90;display:flex;gap:8px;overflow-x:auto;}
-.filter-btn{padding:6px 18px;border-radius:999px;background:var(--card);color:#fff;border:none;font-weight:600;cursor:pointer;white-space:nowrap;}
-.filter-btn.active{background:var(--orange);color:#000;}
-main{padding:80px 16px 100px;}
-h2{font-size:1.2rem;margin:16px 0 8px;}
-.track-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #222;cursor:pointer;transition:background 0.2s;}
-.track-item:hover{background:#1a1a1a;border-radius:8px;padding:10px;}
-.track-item img{width:80px;height:80px;border-radius:8px;object-fit:cover;}
-.track-info{flex:1;overflow:hidden;}
-.track-info h4{font-size:0.95rem;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.track-info p{font-size:0.75rem;color:var(--sec);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.mini-player{position:fixed;bottom:70px;left:0;right:0;background:rgba(30,30,30,0.95);backdrop-filter:blur(12px);padding:10px 16px;display:flex;gap:12px;align-items:center;border-top:1px solid #222;z-index:90;display:none;border-radius:12px;}
-.mini-player img{width:50px;height:50px;border-radius:6px;}
-nav{position:fixed;bottom:0;left:0;right:0;background:#000;border-top:1px solid #222;display:flex;justify-content:space-around;padding:10px 0;z-index:100;border-radius:12px 12px 0 0;}
-nav button{background:none;border:none;color:var(--sec);font-size:1.8rem;cursor:pointer;transition:color 0.2s;}
-nav button.active, nav button:hover{color:var(--orange);}
-#playerModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:200;align-items:center;justify-content:center;}
-.modal-content{background:#181818;width:92%;max-width:480px;border-radius:16px;padding:24px;text-align:center;position:relative;box-shadow:0 0 20px #000;}
-.close{position:absolute;top:16px;right:20px;font-size:2.2rem;cursor:pointer;color:#aaa;}
-audio,iframe{width:100%;margin:20px 0;border-radius:8px;}
-button.action-btn{margin:4px 4px 0 0;padding:6px 10px;font-size:0.8rem;border-radius:6px;border:none;color:#000;background:var(--orange);cursor:pointer;transition:opacity 0.2s;}
-button.action-btn:hover{opacity:0.8;}
-.footer{font-size:0.7rem;color:var(--sec);text-align:center;margin:24px 0;}  
-.inlineLoader{color:var(--orange); text-align:center; margin:12px 0;}
+#playerModal{
+display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);
+align-items:center;justify-content:center;z-index:300;
+}
+.modal{
+background:#111;padding:20px;width:95%;max-width:500px;border-radius:14px;text-align:center;
+}
+.modal img{width:220px;border-radius:12px;margin:10px 0;}
+.modal h2{font-size:1rem;margin:6px 0;}
+.modal p{font-size:0.8rem;color:var(--sec);}
+iframe,audio{width:100%;margin:12px 0;border-radius:8px;}
+button.action{
+background:var(--orange);border:none;padding:8px 12px;margin:4px;border-radius:6px;cursor:pointer;
+}
+footer{text-align:center;font-size:0.7rem;color:#666;margin-top:30px;}
 </style>
 </head>
 <body>
 
-<div id="loaderScreen">
-  <img src="https://i.ibb.co/Mx5q388P" alt="StreamMe Logo">
-  <p>StreamMe is loading trending...</p>
-</div>
-
 <header>
-  <div class="logo"></div>
-  <div class="search">
-    <input id="q" placeholder="Search..." type="text">
-    <button id="goBtn"><i class="fas fa-arrow-right"></i></button>
-  </div>
+<div class="logo"></div>
+<div class="search">
+<input id="q" placeholder="Search music or video...">
+<button onclick="searchNow()"><i class="fas fa-arrow-right"></i></button>
+</div>
 </header>
 
-<div class="filters">
-  <button class="filter-btn active" data-cat="">All</button>
-  <button class="filter-btn" data-cat="afrobeat">Afrosounds</button>
-  <button class="filter-btn" data-cat="pop">Pop</button>
-  <button class="filter-btn" data-cat="electronic">Electronic</button>
+<div id="centerLoader">
+<img src="https://i.ibb.co/Mx5q388P/logo.png">
 </div>
 
 <main>
-  <h2>Search Results</h2>
-  <div id="songs"></div>
-  <div id="scrollLoader" class="inlineLoader" style="display:none;">Loading more...</div>
+<div id="results"></div>
 </main>
 
-<div class="mini-player" id="miniPlayer">
-  <img id="miniCover" src="" alt="">
-  <div class="info">
-    <div id="miniTitle">—</div>
-    <div id="miniArtist" style="color:var(--sec);font-size:0.75rem;">—</div>
-  </div>
-</div>
-
-<nav>
-  <button class="active"><i class="fas fa-home"></i></button>
-  <button><i class="fas fa-fire"></i></button>
-  <button><i class="fas fa-chart-line"></i></button>
-  <button><i class="fas fa-search"></i></button>
-  <button onclick="window.location.href='about.html'"><i class="fas fa-info-circle"></i></button>
-</nav>
-
 <div id="playerModal">
-  <div class="modal-content">
-    <span class="close" onclick="closePlayer()">×</span>
-    <img id="coverImage" src="" style="width:220px;border-radius:12px;margin:20px auto;display:block;">
-    <h2 id="mediaTitle">—</h2>
-    <p id="mediaArtist" style="color:var(--sec);">—</p>
-    <audio id="audioPlayer" controls></audio>
-    <iframe id="videoPlayer" frameborder="0" allowfullscreen style="display:none;"></iframe>
-    <div id="actionBtns">
-      <button class="action-btn" onclick="downloadMedia('audio')">Download Audio</button>
-      <button class="action-btn" onclick="downloadMedia('video')">Download Video</button>
-    </div>
-  </div>
+<div class="modal">
+<button onclick="closePlayer()" style="float:right;background:none;color:#aaa;border:none;font-size:20px;">×</button>
+<img id="cover">
+<h2 id="title"></h2>
+<p id="author"></p>
+
+<div id="mediaContainer"></div>
+
+<button class="action" onclick="downloadMedia('mp3')">Download Audio</button>
+<button class="action" onclick="downloadMedia('mp4')">Download Video</button>
+</div>
 </div>
 
-<div class="footer">StreamMe 2026 — ❤️ by Akewushola AbdulBakri Temitope</div>
+<footer>StreamMe 2026 — ❤️ by Akewushola AbdulBakri Temitope</footer>
 
 <script>
-const API_KEY = 'qasim-dev';
-const SEARCH_API = 'https://api.qasimdev.dpdns.org/api/yts/searchAll';
-const LOAD_API = 'https://api.qasimdev.dpdns.org/api/loaderto/download';
-let currentMedia = {};
-let pageToken = '';
-let fetching = false;
+const API="https://api.qasimdev.dpdns.org/api";
+const KEY="qasim-dev";
+let current={};
+let currentQuery="trending music 2026";
+let loading=false;
 
-function showLoader(msg){
-  const loader = document.getElementById('loaderScreen');
-  loader.querySelector('p').textContent=msg;
-  loader.style.display='flex';
+async function fetchResults(query,append=false){
+if(loading) return;
+loading=true;
+
+if(!append){
+document.getElementById("centerLoader").style.display="flex";
 }
 
-function hideLoader(){
-  document.getElementById('loaderScreen').style.display='none';
+try{
+const res=await fetch(`${API}/yts/searchAll?apiKey=${KEY}&query=${encodeURIComponent(query)}&video_limit=20`);
+const data=await res.json();
+const videos=data.data?.videos||[];
+
+const container=document.getElementById("results");
+if(!append) container.innerHTML="";
+
+videos.forEach(v=>{
+const div=document.createElement("div");
+div.className="track";
+div.innerHTML=`
+<img src="${v.thumbnail}">
+<div>
+<h4>${v.title}</h4>
+<p>${v.author?.name||'Unknown'} • ${v.duration?.timestamp||''}</p>
+</div>`;
+div.onclick=()=>openPlayer(v);
+container.appendChild(div);
+});
+}catch(e){console.log(e);}
+
+document.getElementById("centerLoader").style.display="none";
+loading=false;
 }
 
-async function fetchSongs(query='', category='', append=false){
-  if(fetching) return;
-  fetching = true;
-  const container = document.getElementById('songs');
-  if(!append) showLoader(query?'Searching...':'Loading trending...');
-  
-  if(!query && !category){
-    const randomTerms = ['baby','love','summer','dance','hits','afrobeat'];
-    query=randomTerms[Math.floor(Math.random()*randomTerms.length)];
-  } else if(category){
-    query = category + ' 2026 trending';
-  }
-
-  try{
-    const url = `${SEARCH_API}?apiKey=${API_KEY}&query=${encodeURIComponent(query)}&video_limit=20&channel_limit=5&playlist_limit=5`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if(!append) hideLoader();
-
-    const items = data.data?.videos || [];
-    items.forEach(i=>{
-      const t = i.title || '—';
-      const a = i.author?.name || 'Unknown';
-      const img = i.thumbnail || 'https://via.placeholder.com/80';
-      const vid = i.video_id || i.url || '';
-      const songDiv = document.createElement('div');
-      songDiv.className='track-item';
-      songDiv.innerHTML=`<img src="${img}"><div class="track-info"><h4>${t}</h4><p>${a}</p>
-        <div style="margin-top:6px;">
-          <button class="action-btn" onclick="playMedia({id:'${vid}',title:'${t}',artist:'${a}',img:'${img}',type:'video'})">Play Video</button>
-          <button class="action-btn" onclick="playMedia({id:'${vid}',title:'${t}',artist:'${a}',img:'${img}',type:'audio'})">Play Audio</button>
-        </div>
-      </div>`;
-      container.appendChild(songDiv);
-    });
-  }catch(err){console.error(err); hideLoader();}
-  fetching = false;
+function searchNow(){
+const val=document.getElementById("q").value.trim();
+if(!val) return;
+currentQuery=val;
+fetchResults(val,false);
 }
 
-// Play media in modal
-function playMedia(media){
-  currentMedia = media;
-  document.getElementById('mediaTitle').textContent=media.title;
-  document.getElementById('mediaArtist').textContent=media.artist;
-  document.getElementById('coverImage').src=media.img;
-  const audio = document.getElementById('audioPlayer');
-  const video = document.getElementById('videoPlayer');
-  audio.pause(); video.src=''; audio.style.display='none'; video.style.display='none';
+function openPlayer(video){
+current=video;
+document.getElementById("playerModal").style.display="flex";
+document.getElementById("cover").src=video.thumbnail;
+document.getElementById("title").textContent=video.title;
+document.getElementById("author").textContent=video.author?.name||"Unknown";
 
-  if(media.type==='video'){
-    video.src=`https://www.youtube.com/embed/${media.id}?autoplay=1`;
-    video.style.display='block';
-  } else {
-    audio.src=`${LOAD_API}?apiKey=${API_KEY}&url=${encodeURIComponent(media.id)}&format=mp3`;
-    audio.style.display='block';
-  }
+const fullUrl=`https://www.youtube.com/watch?v=${video.video_id}`;
 
-  document.getElementById('playerModal').style.display='flex';
-  document.getElementById('miniCover').src=media.img;
-  document.getElementById('miniTitle').textContent=media.title;
-  document.getElementById('miniArtist').textContent=media.artist;
-  document.getElementById('miniPlayer').style.display='flex';
+const container=document.getElementById("mediaContainer");
+container.innerHTML=`
+<iframe src="https://www.youtube.com/embed/${video.video_id}?autoplay=1" frameborder="0" allowfullscreen></iframe>
+`;
+
+current.fullUrl=fullUrl;
 }
 
 function closePlayer(){
-  document.getElementById('playerModal').style.display='none';
-  document.getElementById('audioPlayer').pause();
-  document.getElementById('videoPlayer').src='';
+document.getElementById("playerModal").style.display="none";
+document.getElementById("mediaContainer").innerHTML="";
 }
 
-function downloadMedia(type){
-  if(!currentMedia.id) return;
-  let url='';
-  if(type==='audio') url=`${LOAD_API}?apiKey=${API_KEY}&url=${encodeURIComponent(currentMedia.id)}&format=mp3`;
-  else url=`${LOAD_API}?apiKey=${API_KEY}&url=${encodeURIComponent(currentMedia.id)}&format=mp4`;
-  const a=document.createElement('a');
-  a.href=url; a.download=currentMedia.title; document.body.appendChild(a); a.click(); a.remove();
+function downloadMedia(format){
+if(!current.fullUrl) return;
+const url=`${API}/loaderto/download?apiKey=${KEY}&url=${encodeURIComponent(current.fullUrl)}&format=${format}`;
+const a=document.createElement("a");
+a.href=url;
+a.target="_blank";
+document.body.appendChild(a);
+a.click();
+a.remove();
 }
 
-// Search button
-document.getElementById('goBtn').addEventListener('click', ()=>{
-  const val=document.getElementById('q').value.trim();
-  if(val){
-    document.getElementById('songs').innerHTML='';
-    fetchSongs(val);
-  }
+window.addEventListener("scroll",()=>{
+if((window.innerHeight+window.scrollY)>=document.body.offsetHeight-300){
+fetchResults(currentQuery,true);
+}
 });
 
-// Filter buttons
-document.querySelectorAll('.filter-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('songs').innerHTML='';
-    fetchSongs('', btn.dataset.cat);
-  });
-});
-
-// Infinite scroll
-window.addEventListener('scroll', ()=>{
-  if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 && !fetching){
-    document.getElementById('scrollLoader').style.display='block';
-    fetchSongs(document.getElementById('q').value.trim(), '', true).then(()=>document.getElementById('scrollLoader').style.display='none');
-  }
-});
-
-// Initial trending load
-window.onload = ()=>fetchSongs();
+window.onload=()=>{
+fetchResults(currentQuery,false);
+};
 </script>
+
 </body>
 </html>
