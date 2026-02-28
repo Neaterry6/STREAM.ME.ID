@@ -1,203 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StreamMe</title>
-  <link rel="manifest" href="/manifest.json">
-  <style>
-    :root{--bg:#000;--card:#121212;--text:#fff;--sec:#b3b3b3;--green:#1ed760;}
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:140px;}
-    #loadingScreen{position:fixed;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;}
-    #loadingScreen img{width:120px;height:120px;border-radius:50%;}
-    #loadingScreen p{font-size:1.2rem;font-weight:600;color:var(--green);margin-top:20px;}
-    header{position:fixed;top:0;left:0;right:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);padding:12px 16px;z-index:100;display:flex;gap:12px;align-items:center;}
-    .logo{width:38px;height:38px;border-radius:50%;background:#444;}
-    .search{flex:1;background:var(--card);border-radius:999px;padding:10px 16px;}
-    .search input{width:100%;background:transparent;border:none;color:#fff;font-size:0.95rem;}
-    .search input::placeholder{color:var(--sec);}
-    .filters{position:sticky;top:64px;background:var(--bg);padding:16px 16px 8px;z-index:90;display:flex;gap:8px;overflow-x:auto;}
-    .filter-btn{padding:6px 18px;border-radius:999px;background:var(--card);color:#fff;border:none;font-weight:600;cursor:pointer;white-space:nowrap;}
-    .filter-btn.active{background:var(--green);color:#000;}
-    main{padding:16px;}
-    h2{font-size:1.35rem;margin:24px 0 12px;font-weight:700;}
-    .horizontal{display:flex;overflow-x:auto;gap:16px;padding-bottom:12px;scrollbar-width:none;}
-    .horizontal::-webkit-scrollbar{display:none;}
-    .mix-card{width:160px;flex-shrink:0;background:var(--card);border-radius:8px;overflow:hidden;position:relative;}
-    .mix-card img{width:100%;aspect-ratio:1;object-fit:cover;}
-    .mix-card .label{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,#000);padding:40px 12px 12px;font-weight:600;}
-    .track-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #222;cursor:pointer;}
-    .track-item img{width:50px;height:50px;border-radius:6px;object-fit:cover;}
-    .track-info{flex:1;}
-    .track-info h4{font-size:0.95rem;margin-bottom:4px;}
-    .track-info p{font-size:0.82rem;color:var(--sec);}
-    .mini-player{position:fixed;bottom:70px;left:0;right:0;background:rgba(30,30,30,0.95);backdrop-filter:blur(12px);padding:10px 16px;display:flex;gap:12px;align-items:center;border-top:1px solid #222;z-index:90;}
-    .mini-player img{width:50px;height:50px;border-radius:6px;object-fit:cover;}
-    .mini-player .info{flex:1;}
-    nav{position:fixed;bottom:0;left:0;right:0;background:#000;border-top:1px solid #222;display:flex;justify-content:space-around;padding:10px 0;z-index:100;}
-    nav button{background:none;border:none;color:var(--sec);font-size:1.8rem;cursor:pointer;}
-    nav button.active{color:var(--green);}
-    #playerModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:200;align-items:center;justify-content:center;}
-    .modal-content{background:#181818;width:92%;max-width:480px;border-radius:16px;padding:24px;text-align:center;position:relative;}
-    .close{position:absolute;top:16px;right:20px;font-size:2.2rem;cursor:pointer;color:#aaa;}
-    audio, iframe{width:100%;margin:20px 0;border-radius:8px;}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreamMe</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+  --bg:#000; --card:#121212; --text:#fff; --sec:#b3b3b3; --orange:#ff9500;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:140px;}
+
+#loaderScreen{
+  position:fixed; inset:0; background:#000; display:flex; align-items:center; justify-content:center; z-index:9999; flex-direction:column;
+}
+#loaderScreen img{
+  width:120px; height:120px; border-radius:12px; animation: glow 1.5s infinite;
+}
+@keyframes glow{
+  0%,100%{opacity:0.2;}
+  50%{opacity:1;}
+}
+#loaderScreen p{margin-top:16px; color:#fff; font-weight:600;}
+
+header{position:fixed;top:0;left:0;right:0;background:rgba(0,0,0,0.9);backdrop-filter:blur(10px);padding:12px 16px;z-index:100;display:flex;gap:12px;align-items:center;}
+.logo{width:38px;height:38px;border-radius:50%;background:#444; background-image:url('https://i.ibb.co/Mx5q388P'); background-size:cover;}
+.search{flex:1;background:var(--card);border-radius:999px;padding:6px 12px;display:flex;align-items:center;}
+.search input{flex:1;background:transparent;border:none;color:#fff;font-size:0.95rem;padding:6px;}
+.search button{margin-left:6px;padding:6px 10px;background:var(--orange);border:none;color:#000;border-radius:6px;cursor:pointer;}
+.filters{position:sticky;top:64px;background:var(--bg);padding:16px 16px 8px;z-index:90;display:flex;gap:8px;overflow-x:auto;}
+.filter-btn{padding:6px 18px;border-radius:999px;background:var(--card);color:#fff;border:none;font-weight:600;cursor:pointer;white-space:nowrap;}
+.filter-btn.active{background:var(--orange);color:#000;}
+main{padding:80px 16px 100px;}
+h2{font-size:1.2rem;margin:16px 0 8px;}
+.track-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #222;cursor:pointer;transition:background 0.2s;}
+.track-item:hover{background:#1a1a1a;border-radius:8px;padding:10px;}
+.track-item img{width:80px;height:80px;border-radius:8px;object-fit:cover;}
+.track-info{flex:1;overflow:hidden;}
+.track-info h4{font-size:0.95rem;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.track-info p{font-size:0.75rem;color:var(--sec);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mini-player{position:fixed;bottom:70px;left:0;right:0;background:rgba(30,30,30,0.95);backdrop-filter:blur(12px);padding:10px 16px;display:flex;gap:12px;align-items:center;border-top:1px solid #222;z-index:90;display:none;border-radius:12px;}
+.mini-player img{width:50px;height:50px;border-radius:6px;}
+nav{position:fixed;bottom:0;left:0;right:0;background:#000;border-top:1px solid #222;display:flex;justify-content:space-around;padding:10px 0;z-index:100;border-radius:12px 12px 0 0;}
+nav button{background:none;border:none;color:var(--sec);font-size:1.8rem;cursor:pointer;transition:color 0.2s;}
+nav button.active, nav button:hover{color:var(--orange);}
+#playerModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:200;align-items:center;justify-content:center;}
+.modal-content{background:#181818;width:92%;max-width:480px;border-radius:16px;padding:24px;text-align:center;position:relative;box-shadow:0 0 20px #000;}
+.close{position:absolute;top:16px;right:20px;font-size:2.2rem;cursor:pointer;color:#aaa;}
+audio,iframe{width:100%;margin:20px 0;border-radius:8px;}
+button.action-btn{margin:4px 4px 0 0;padding:6px 10px;font-size:0.8rem;border-radius:6px;border:none;color:#000;background:var(--orange);cursor:pointer;transition:opacity 0.2s;}
+button.action-btn:hover{opacity:0.8;}
+.footer{font-size:0.7rem;color:var(--sec);text-align:center;margin:24px 0;}  
+.inlineLoader{color:var(--orange); text-align:center; margin:12px 0;}
+</style>
 </head>
 <body>
 
-<div id="loadingScreen">
-  <img src="https://i.ibb.co/Mx5q388P/your-logo.jpg" alt="Logo">
-  <p>Loading...</p>
+<div id="loaderScreen">
+  <img src="https://i.ibb.co/Mx5q388P" alt="StreamMe Logo">
+  <p>StreamMe is loading trending...</p>
 </div>
 
 <header>
   <div class="logo"></div>
-  <div class="search"><input id="q" placeholder="What do you want to listen to?" type="text"></div>
+  <div class="search">
+    <input id="q" placeholder="Search..." type="text">
+    <button id="goBtn"><i class="fas fa-arrow-right"></i></button>
+  </div>
 </header>
 
 <div class="filters">
-  <button class="filter-btn active" onclick="setSource('spotify')">Spotify</button>
-  <button class="filter-btn" onclick="setSource('youtube')">YouTube</button>
-  <button class="filter-btn" onclick="setSource('musicbrainz')">MusicBrainz</button>
+  <button class="filter-btn active" data-cat="">All</button>
+  <button class="filter-btn" data-cat="afrobeat">Afrosounds</button>
+  <button class="filter-btn" data-cat="pop">Pop</button>
+  <button class="filter-btn" data-cat="electronic">Electronic</button>
 </div>
 
 <main>
-  <h2>Your Favorites</h2>
-  <div class="horizontal" id="favorites"></div>
-
-  <h2>Artists you like</h2>
-  <div class="horizontal" id="artists"></div>
-
-  <h2>Jump back in</h2>
-  <div class="horizontal" id="mixes"></div>
-
-  <h2>Start listening</h2>
-  <div id="tracks"></div>
+  <h2>Search Results</h2>
+  <div id="songs"></div>
+  <div id="scrollLoader" class="inlineLoader" style="display:none;">Loading more...</div>
 </main>
 
-<div class="mini-player" id="miniPlayer" style="display:none">
+<div class="mini-player" id="miniPlayer">
   <img id="miniCover" src="" alt="">
   <div class="info">
     <div id="miniTitle">—</div>
-    <div id="miniArtist" style="color:var(--sec);font-size:0.85rem;">—</div>
+    <div id="miniArtist" style="color:var(--sec);font-size:0.75rem;">—</div>
   </div>
 </div>
 
 <nav>
-  <button class="active">🏠</button>
-  <button>🔍</button>
-  <button>📚</button>
-  <button>⭐</button>
-  <button>+</button>
+  <button class="active"><i class="fas fa-home"></i></button>
+  <button><i class="fas fa-fire"></i></button>
+  <button><i class="fas fa-chart-line"></i></button>
+  <button><i class="fas fa-search"></i></button>
+  <button onclick="window.location.href='about.html'"><i class="fas fa-info-circle"></i></button>
 </nav>
 
 <div id="playerModal">
   <div class="modal-content">
     <span class="close" onclick="closePlayer()">×</span>
-    <img id="coverImage" src="" style="width:220px;border-radius:12px;margin:0 auto 20px;display:block;">
+    <img id="coverImage" src="" style="width:220px;border-radius:12px;margin:20px auto;display:block;">
     <h2 id="mediaTitle">—</h2>
-    <p id="mediaArtist" style="color:var(--sec);margin:8px 0 20px;">—</p>
+    <p id="mediaArtist" style="color:var(--sec);">—</p>
     <audio id="audioPlayer" controls></audio>
     <iframe id="videoPlayer" frameborder="0" allowfullscreen style="display:none;"></iframe>
+    <div id="actionBtns">
+      <button class="action-btn" onclick="downloadMedia('audio')">Download Audio</button>
+      <button class="action-btn" onclick="downloadMedia('video')">Download Video</button>
+    </div>
   </div>
 </div>
 
+<div class="footer">StreamMe 2026 — ❤️ by Akewushola AbdulBakri Temitope</div>
+
 <script>
-let currentSource = 'spotify';
-let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+const API_KEY = 'qasim-dev';
+const SEARCH_API = 'https://api.qasimdev.dpdns.org/api/yts/searchAll';
+const LOAD_API = 'https://api.qasimdev.dpdns.org/api/loaderto/download';
+let currentMedia = {};
+let pageToken = '';
+let fetching = false;
 
-function setSource(src) {
-  currentSource = src;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
+function showLoader(msg){
+  const loader = document.getElementById('loaderScreen');
+  loader.querySelector('p').textContent=msg;
+  loader.style.display='flex';
 }
 
-async function load(url, container, isMix=false) {
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-    container.innerHTML = '';
-    const items = data.items || data.results || [];
-    items.slice(0,12).forEach(i => {
-      const t = i.name || i.title || '—';
-      const a = i.artists?.[0]?.name || i.channel || '';
-      const img = i.images?.[0]?.url || i.thumbnail || 'https://via.placeholder.com/160';
-      const id = i.id || i.videoId || '';
-      const card = document.createElement('div');
-      card.className = isMix ? 'mix-card' : 'artist-card';
-      card.innerHTML = isMix
-        ? `<img src="\( {img}"><div class="label"> \){t}</div>`
-        : `<img src="\( {img}"><p> \){t}</p>`;
-      card.onclick = () => playMedia(id, t, a, img);
-      container.appendChild(card);
-    });
-  } catch {}
+function hideLoader(){
+  document.getElementById('loaderScreen').style.display='none';
 }
 
-function playMedia(id, title, artist, img) {
-  document.getElementById('mediaTitle').textContent = title;
-  document.getElementById('mediaArtist').textContent = artist;
-  document.getElementById('coverImage').src = img;
-
-  const audio = document.getElementById('audioPlayer');
-  const video = document.getElementById('videoPlayer');
-  audio.style.display = 'none';
-  video.style.display = 'none';
-  audio.pause(); video.src = '';
-
-  if (currentSource === 'youtube' && id) {
-    video.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
-    video.style.display = 'block';
-  } else {
-    audio.src = `/api/\( {currentSource}/download?url= \){encodeURIComponent(id)}`;
-    audio.style.display = 'block';
+async function fetchSongs(query='', category='', append=false){
+  if(fetching) return;
+  fetching = true;
+  const container = document.getElementById('songs');
+  if(!append) showLoader(query?'Searching...':'Loading trending...');
+  
+  if(!query && !category){
+    const randomTerms = ['baby','love','summer','dance','hits','afrobeat'];
+    query=randomTerms[Math.floor(Math.random()*randomTerms.length)];
+  } else if(category){
+    query = category + ' 2026 trending';
   }
 
-  document.getElementById('playerModal').style.display = 'flex';
+  try{
+    const url = `${SEARCH_API}?apiKey=${API_KEY}&query=${encodeURIComponent(query)}&video_limit=20&channel_limit=5&playlist_limit=5`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if(!append) hideLoader();
 
-  document.getElementById('miniCover').src = img;
-  document.getElementById('miniTitle').textContent = title;
-  document.getElementById('miniArtist').textContent = artist;
-  document.getElementById('miniPlayer').style.display = 'flex';
+    const items = data.data?.videos || [];
+    items.forEach(i=>{
+      const t = i.title || '—';
+      const a = i.author?.name || 'Unknown';
+      const img = i.thumbnail || 'https://via.placeholder.com/80';
+      const vid = i.video_id || i.url || '';
+      const songDiv = document.createElement('div');
+      songDiv.className='track-item';
+      songDiv.innerHTML=`<img src="${img}"><div class="track-info"><h4>${t}</h4><p>${a}</p>
+        <div style="margin-top:6px;">
+          <button class="action-btn" onclick="playMedia({id:'${vid}',title:'${t}',artist:'${a}',img:'${img}',type:'video'})">Play Video</button>
+          <button class="action-btn" onclick="playMedia({id:'${vid}',title:'${t}',artist:'${a}',img:'${img}',type:'audio'})">Play Audio</button>
+        </div>
+      </div>`;
+      container.appendChild(songDiv);
+    });
+  }catch(err){console.error(err); hideLoader();}
+  fetching = false;
 }
 
-function closePlayer() {
-  document.getElementById('playerModal').style.display = 'none';
+// Play media in modal
+function playMedia(media){
+  currentMedia = media;
+  document.getElementById('mediaTitle').textContent=media.title;
+  document.getElementById('mediaArtist').textContent=media.artist;
+  document.getElementById('coverImage').src=media.img;
+  const audio = document.getElementById('audioPlayer');
+  const video = document.getElementById('videoPlayer');
+  audio.pause(); video.src=''; audio.style.display='none'; video.style.display='none';
+
+  if(media.type==='video'){
+    video.src=`https://www.youtube.com/embed/${media.id}?autoplay=1`;
+    video.style.display='block';
+  } else {
+    audio.src=`${LOAD_API}?apiKey=${API_KEY}&url=${encodeURIComponent(media.id)}&format=mp3`;
+    audio.style.display='block';
+  }
+
+  document.getElementById('playerModal').style.display='flex';
+  document.getElementById('miniCover').src=media.img;
+  document.getElementById('miniTitle').textContent=media.title;
+  document.getElementById('miniArtist').textContent=media.artist;
+  document.getElementById('miniPlayer').style.display='flex';
+}
+
+function closePlayer(){
+  document.getElementById('playerModal').style.display='none';
   document.getElementById('audioPlayer').pause();
-  document.getElementById('videoPlayer').src = '';
+  document.getElementById('videoPlayer').src='';
 }
 
-function renderFavorites() {
-  const cont = document.getElementById('favorites');
-  cont.innerHTML = '';
-  favorites.forEach(f => {
-    const card = document.createElement('div');
-    card.className = 'mix-card';
-    card.innerHTML = `<img src="\( {f.img}"><div class="label"> \){f.title}</div>`;
-    card.onclick = () => playMedia(f.id, f.title, f.artist, f.img);
-    cont.appendChild(card);
-  });
+function downloadMedia(type){
+  if(!currentMedia.id) return;
+  let url='';
+  if(type==='audio') url=`${LOAD_API}?apiKey=${API_KEY}&url=${encodeURIComponent(currentMedia.id)}&format=mp3`;
+  else url=`${LOAD_API}?apiKey=${API_KEY}&url=${encodeURIComponent(currentMedia.id)}&format=mp4`;
+  const a=document.createElement('a');
+  a.href=url; a.download=currentMedia.title; document.body.appendChild(a); a.click(); a.remove();
 }
 
-document.getElementById('q').addEventListener('keypress', e => {
-  if (e.key === 'Enter') {
-    const val = e.target.value.trim();
-    if (!val) return;
-    let url = currentSource === 'youtube' ? `/api/yts/searchAll?q=${encodeURIComponent(val)}` :
-              currentSource === 'spotify' ? `/api/spotify/search?q=${encodeURIComponent(val)}` :
-              `/api/musicbrainz/search?query=${encodeURIComponent(val)}`;
-    load(url, document.getElementById('tracks'), true);
+// Search button
+document.getElementById('goBtn').addEventListener('click', ()=>{
+  const val=document.getElementById('q').value.trim();
+  if(val){
+    document.getElementById('songs').innerHTML='';
+    fetchSongs(val);
   }
 });
 
-window.onload = () => {
-  load('/api/musicbrainz/artists?q=popular', document.getElementById('artists'), false);
-  load('/api/musicbrainz/albums?q=trending', document.getElementById('mixes'), true);
-  load('/api/musicbrainz/tracks?q=trending', document.getElementById('tracks'), true);
-  renderFavorites();
-  setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 1500);
-};
+// Filter buttons
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('songs').innerHTML='';
+    fetchSongs('', btn.dataset.cat);
+  });
+});
+
+// Infinite scroll
+window.addEventListener('scroll', ()=>{
+  if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 && !fetching){
+    document.getElementById('scrollLoader').style.display='block';
+    fetchSongs(document.getElementById('q').value.trim(), '', true).then(()=>document.getElementById('scrollLoader').style.display='none');
+  }
+});
+
+// Initial trending load
+window.onload = ()=>fetchSongs();
 </script>
 </body>
 </html>
