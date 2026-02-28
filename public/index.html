@@ -7,45 +7,179 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root{
---bg:#000;--card:#121212;--text:#fff;--sec:#aaa;--orange:#ff9500;
+--bg:#000;
+--card:#121212;
+--text:#fff;
+--sec:#aaa;
+--orange:#ff9500;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:system-ui;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:120px;}
-header{position:fixed;top:0;left:0;right:0;background:#000;padding:12px;display:flex;gap:10px;z-index:100;}
-.logo{width:40px;height:40px;border-radius:50%;background:url('https://i.ibb.co/Mx5q388P/logo.png') center/cover no-repeat;}
-.search{flex:1;display:flex;background:var(--card);border-radius:999px;overflow:hidden;}
-.search input{flex:1;border:none;background:transparent;color:#fff;padding:10px;}
-.search button{background:var(--orange);border:none;padding:10px 14px;cursor:pointer;}
-main{padding:80px 16px;}
-.track{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #222;cursor:pointer;}
-.track img{width:80px;height:80px;border-radius:8px;object-fit:cover;}
-.track h4{font-size:0.9rem;}
-.track p{font-size:0.75rem;color:var(--sec);}
+body{
+font-family:system-ui;
+background:var(--bg);
+color:var(--text);
+min-height:100vh;
+padding-bottom:90px;
+}
+
+/* HEADER */
+header{
+position:fixed;
+top:0;left:0;right:0;
+background:#000;
+padding:12px;
+display:flex;
+gap:10px;
+z-index:100;
+border-bottom:1px solid #111;
+}
+.logo{
+width:40px;height:40px;border-radius:50%;
+background:url('https://i.ibb.co/Mx5q388P') center/cover no-repeat;
+}
+.search{
+flex:1;
+display:flex;
+background:var(--card);
+border-radius:999px;
+overflow:hidden;
+}
+.search input{
+flex:1;border:none;background:transparent;color:#fff;padding:10px;
+}
+.search button{
+background:var(--orange);border:none;padding:10px 14px;cursor:pointer;
+}
+
+/* LOADER */
 #centerLoader{
-position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:200;background:#000;
+position:fixed;inset:0;
+display:none;
+align-items:center;
+justify-content:center;
+z-index:200;
+background:#000;
+flex-direction:column;
 }
 #centerLoader img{
-width:120px;animation:glow 1.5s ease-in-out infinite alternate;
+width:120px;
+animation:glow 1.5s infinite alternate;
+}
+#loaderText{
+margin-top:10px;color:#fff;font-size:0.9rem;text-align:center;
 }
 @keyframes glow{
 from{opacity:0.4;transform:scale(0.95);}
 to{opacity:1;transform:scale(1.05);}
 }
+
+/* MAIN */
+main{padding:80px 16px 20px;}
+.section{display:none;}
+.section.active{display:block;}
+
+.track{
+display:flex;gap:10px;
+padding:10px 0;
+border-bottom:1px solid #222;
+cursor:pointer;
+}
+.track img{
+width:80px;height:80px;border-radius:8px;object-fit:cover;
+}
+.track h4{font-size:0.9rem;}
+.track p{font-size:0.75rem;color:var(--sec);}
+
+/* NAV */
+nav{
+position:fixed;bottom:0;left:0;right:0;
+background:#000;
+display:flex;justify-content:space-around;
+padding:10px 0;border-top:1px solid #111;
+}
+nav button{
+background:none;border:none;color:#aaa;
+font-size:18px;
+display:flex;flex-direction:column;
+align-items:center;gap:4px;
+cursor:pointer;
+}
+nav button.active{color:var(--orange);}
+
+/* MODAL */
 #playerModal{
-display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);
-align-items:center;justify-content:center;z-index:300;
+display:none;
+position:fixed;inset:0;
+background:rgba(0,0,0,0.95);
+align-items:center;
+justify-content:center;
+z-index:300;
 }
 .modal{
-background:#111;padding:20px;width:95%;max-width:500px;border-radius:14px;text-align:center;
+background:#111;
+padding:20px;
+width:95%;max-width:500px;
+border-radius:14px;
+text-align:center;
 }
-.modal img{width:220px;border-radius:12px;margin:10px 0;}
-.modal h2{font-size:1rem;margin:6px 0;}
-.modal p{font-size:0.8rem;color:var(--sec);}
-iframe,audio{width:100%;margin:12px 0;border-radius:8px;}
+.modal img{
+width:200px;border-radius:12px;margin:10px 0;
+}
+iframe,audio{
+width:100%;margin:12px 0;border-radius:8px;
+}
 button.action{
-background:var(--orange);border:none;padding:8px 12px;margin:4px;border-radius:6px;cursor:pointer;
+background:var(--orange);
+border:none;padding:8px 12px;
+margin:4px;border-radius:6px;cursor:pointer;
 }
-footer{text-align:center;font-size:0.7rem;color:#666;margin-top:30px;}
+footer{
+text-align:center;font-size:0.7rem;color:#666;margin-top:20px;
+}
+
+/* MINI PLAYER */
+#miniPlayer{
+position:fixed;
+bottom:70px;
+left:0;
+right:0;
+background:#111;
+padding:8px 12px;
+display:none;
+align-items:center;
+gap:10px;
+border-top:1px solid #222;
+z-index:250;
+}
+#miniPlayer span{
+font-size:0.8rem;
+flex:1;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+
+/* PROGRESS BAR */
+#progressBar{
+width:100%;
+height:4px;
+background:#222;
+margin-top:10px;
+border-radius:4px;
+overflow:hidden;
+display:none;
+}
+#progress{
+height:100%;
+width:0%;
+background:var(--orange);
+transition:0.2s;
+}
+
+/* SECTION TITLES */
+.section h2{
+font-size:1rem;margin:12px 0 6px;color:var(--orange);
+}
 </style>
 </head>
 <body>
@@ -53,31 +187,72 @@ footer{text-align:center;font-size:0.7rem;color:#666;margin-top:30px;}
 <header>
 <div class="logo"></div>
 <div class="search">
-<input id="q" placeholder="Search music or video...">
-<button onclick="searchNow()"><i class="fas fa-arrow-right"></i></button>
+<input id="q" placeholder="Search music...">
+<button onclick="searchNow(true)"><i class="fas fa-arrow-right"></i></button>
 </div>
 </header>
 
 <div id="centerLoader">
-<img src="https://i.ibb.co/Mx5q388P/logo.png">
+<img src="https://i.ibb.co/Mx5q388P">
+<p id="loaderText">StreamMe is loading...</p>
 </div>
 
 <main>
-<div id="results"></div>
+<div id="home" class="section active">
+<h2>Trending</h2>
+<div id="trendingContainer"></div>
+
+<h2>Recently Played</h2>
+<div id="recentContainer"></div>
+</div>
+<div id="favorites" class="section"></div>
+<div id="downloads" class="section"></div>
+<div id="playlists" class="section"></div>
 </main>
+
+<nav>
+<button class="active" onclick="switchSection('home',this)">
+<i class="fas fa-home"></i><span>Home</span>
+</button>
+<button onclick="switchSection('favorites',this)">
+<i class="fas fa-heart"></i><span>Favorites</span>
+</button>
+<button onclick="switchSection('downloads',this)">
+<i class="fas fa-download"></i><span>Downloads</span>
+</button>
+<button onclick="switchSection('playlists',this)">
+<i class="fas fa-list"></i><span>Playlists</span>
+</button>
+<button onclick="window.location.href='about.html'">
+<i class="fas fa-info-circle"></i><span>About</span>
+</button>
+</nav>
 
 <div id="playerModal">
 <div class="modal">
 <button onclick="closePlayer()" style="float:right;background:none;color:#aaa;border:none;font-size:20px;">×</button>
 <img id="cover">
-<h2 id="title"></h2>
+<h3 id="title"></h3>
 <p id="author"></p>
 
 <div id="mediaContainer"></div>
 
-<button class="action" onclick="downloadMedia('mp3')">Download Audio</button>
-<button class="action" onclick="downloadMedia('mp4')">Download Video</button>
+<div id="progressBar">
+<div id="progress"></div>
 </div>
+
+<button class="action" onclick="playVideo()">🎥 Play Video</button>
+<button class="action" onclick="playAudio()">🎵 Play Audio</button>
+<button class="action" onclick="downloadMedia('mp3')">📥 Download Audio</button>
+<button class="action" onclick="downloadMedia('mp4')">📥 Download Video</button>
+<button class="action" onclick="addFavorite()">❤️ Favorite</button>
+<button class="action" onclick="addToPlaylist()">➕ Playlist</button>
+</div>
+</div>
+
+<div id="miniPlayer">
+<span id="miniTitle"></span>
+<audio id="miniAudio" controls></audio>
 </div>
 
 <footer>StreamMe 2026 — ❤️ by Akewushola AbdulBakri Temitope</footer>
@@ -85,92 +260,198 @@ footer{text-align:center;font-size:0.7rem;color:#666;margin-top:30px;}
 <script>
 const API="https://api.qasimdev.dpdns.org/api";
 const KEY="qasim-dev";
-let current={};
-let currentQuery="trending music 2026";
-let loading=false;
+let current={}, nextPageToken=null, loadingMore=false, currentQuery="", preloaded=[], trendingLoaded=false;
 
-async function fetchResults(query,append=false){
-if(loading) return;
-loading=true;
-
-if(!append){
-document.getElementById("centerLoader").style.display="flex";
+// Section switching
+function switchSection(id,btn){
+document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+btn.classList.add('active');
+renderSaved();
 }
 
+// Load trending
+async function loadTrending(){
+if(trendingLoaded) return;
+document.getElementById("centerLoader").style.display="flex";
+document.getElementById("loaderText").textContent="Loading trending...";
 try{
-const res=await fetch(`${API}/yts/searchAll?apiKey=${KEY}&query=${encodeURIComponent(query)}&video_limit=20`);
+const res=await fetch(`${API}/yts/searchAll?apiKey=${KEY}&query=trending&video_limit=20`);
 const data=await res.json();
 const videos=data.data?.videos||[];
+renderVideos(videos, document.getElementById("trendingContainer"));
+trendingLoaded=true;
+}catch(err){console.error(err);}
+document.getElementById("centerLoader").style.display="none";
+}
 
-const container=document.getElementById("results");
-if(!append) container.innerHTML="";
+// Search function
+async function searchNow(reset=false){
+const val=document.getElementById("q").value.trim();
+if(!val) return;
+if(reset){
+currentQuery=val;
+nextPageToken=null;
+document.getElementById("home").innerHTML='<h2>Search Results</h2><div id="trendingContainer"></div>';
+preloaded=[];
+document.getElementById("centerLoader").style.display="flex";
+}
+document.getElementById("loaderText").textContent=`Searching "${currentQuery}"...`;
+if(loadingMore) return;
+loadingMore=true;
+try{
+let url=`${API}/yts/searchAll?apiKey=${KEY}&query=${encodeURIComponent(currentQuery)}&video_limit=20`;
+if(nextPageToken) url += `&page=${nextPageToken}`;
+const res=await fetch(url);
+const data=await res.json();
+const videos=data.data?.videos||[];
+preloaded.push(...videos);
+renderVideos(videos, document.getElementById("trendingContainer"));
+nextPageToken = (videos.length>0)?(nextPageToken?nextPageToken+1:2):null;
+}catch(err){console.error(err);}
+loadingMore=false;
+document.getElementById("centerLoader").style.display="none";
+}
 
+// Render videos to container
+function renderVideos(videos, container){
 videos.forEach(v=>{
 const div=document.createElement("div");
 div.className="track";
-div.innerHTML=`
-<img src="${v.thumbnail}">
-<div>
-<h4>${v.title}</h4>
-<p>${v.author?.name||'Unknown'} • ${v.duration?.timestamp||''}</p>
-</div>`;
+div.innerHTML=`<img src="${v.thumbnail}"><div><h4>${v.title}</h4><p>${v.author?.name||''}</p></div>`;
 div.onclick=()=>openPlayer(v);
 container.appendChild(div);
 });
-}catch(e){console.log(e);}
-
-document.getElementById("centerLoader").style.display="none";
-loading=false;
 }
 
-function searchNow(){
-const val=document.getElementById("q").value.trim();
-if(!val) return;
-currentQuery=val;
-fetchResults(val,false);
-}
-
-function openPlayer(video){
-current=video;
-document.getElementById("playerModal").style.display="flex";
-document.getElementById("cover").src=video.thumbnail;
-document.getElementById("title").textContent=video.title;
-document.getElementById("author").textContent=video.author?.name||"Unknown";
-
-const fullUrl=`https://www.youtube.com/watch?v=${video.video_id}`;
-
-const container=document.getElementById("mediaContainer");
-container.innerHTML=`
-<iframe src="https://www.youtube.com/embed/${video.video_id}?autoplay=1" frameborder="0" allowfullscreen></iframe>
-`;
-
-current.fullUrl=fullUrl;
-}
-
-function closePlayer(){
-document.getElementById("playerModal").style.display="none";
-document.getElementById("mediaContainer").innerHTML="";
-}
-
-function downloadMedia(format){
-if(!current.fullUrl) return;
-const url=`${API}/loaderto/download?apiKey=${KEY}&url=${encodeURIComponent(current.fullUrl)}&format=${format}`;
-const a=document.createElement("a");
-a.href=url;
-a.target="_blank";
-document.body.appendChild(a);
-a.click();
-a.remove();
-}
-
-window.addEventListener("scroll",()=>{
-if((window.innerHeight+window.scrollY)>=document.body.offsetHeight-300){
-fetchResults(currentQuery,true);
+// Infinite scroll
+window.addEventListener('scroll',()=>{
+if((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200){
+if(currentQuery && !loadingMore && nextPageToken) searchNow(false);
 }
 });
 
+// Open player modal
+function openPlayer(v){
+current=v;
+current.fullUrl=`https://www.youtube.com/watch?v=${v.video_id}`;
+document.getElementById("playerModal").style.display="flex";
+document.getElementById("cover").src=v.thumbnail;
+document.getElementById("title").textContent=v.title;
+document.getElementById("author").textContent=v.author?.name||'';
+document.getElementById("mediaContainer").innerHTML="";
+addToRecent(v);
+}
+
+// Close player
+function closePlayer(){document.getElementById("playerModal").style.display="none";}
+
+// Play video
+function playVideo(){
+document.getElementById("mediaContainer").innerHTML=
+`<iframe src="https://www.youtube.com/embed/${current.video_id}?autoplay=1" allowfullscreen></iframe>`;
+}
+
+// Play audio
+async function playAudio(){
+document.getElementById("mediaContainer").innerHTML="Loading audio...";
+const res=await fetch(`${API}/loaderto/download?apiKey=${KEY}&url=${encodeURIComponent(current.fullUrl)}&format=mp3`);
+const data=await res.json();
+if(data.success && data.data?.downloadUrl){
+document.getElementById("mediaContainer").innerHTML=
+`<audio controls autoplay src="${data.data.downloadUrl}"></audio>`;
+document.getElementById("miniPlayer").style.display="flex";
+document.getElementById("miniTitle").textContent=current.title;
+const mini=document.getElementById("miniAudio");
+mini.src=data.data.downloadUrl;
+mini.play();
+}else{document.getElementById("mediaContainer").innerHTML="Audio failed.";}
+}
+
+// Download media
+async function downloadMedia(format){
+document.getElementById("progressBar").style.display="block";
+let p=0;
+let int=setInterval(()=>{p+=8;if(p<=90){document.getElementById("progress").style.width=p+"%";}},150);
+try{
+const res=await fetch(`${API}/loaderto/download?apiKey=${KEY}&url=${encodeURIComponent(current.fullUrl)}&format=${format}`);
+const data=await res.json();
+clearInterval(int);
+document.getElementById("progress").style.width="100%";
+if(data.success && data.data?.downloadUrl){
+const a=document.createElement("a");
+a.href=data.data.downloadUrl;
+a.target="_blank";
+a.click();
+}
+}catch(err){alert("Download failed");}
+setTimeout(()=>{document.getElementById("progressBar").style.display="none";document.getElementById("progress").style.width="0%";},800);
+}
+
+// Favorites & Playlist
+function addFavorite(){
+let fav=JSON.parse(localStorage.getItem("fav")||"[]");
+if(!fav.find(v=>v.video_id===current.video_id)){
+fav.push(current);
+localStorage.setItem("fav",JSON.stringify(fav));
+alert("Added to Favorites");
+}
+}
+function addToPlaylist(){
+let list=JSON.parse(localStorage.getItem("playlist")||"[]");
+if(!list.find(v=>v.video_id===current.video_id)){
+list.push(current);
+localStorage.setItem("playlist",JSON.stringify(list));
+alert("Added to Playlist");
+}
+}
+
+// Recently Played
+function addToRecent(v){
+let rec=JSON.parse(localStorage.getItem("recent")||"[]");
+rec=rec.filter(x=>x.video_id!==v.video_id);
+rec.unshift(v);
+if(rec.length>12) rec.pop();
+localStorage.setItem("recent",JSON.stringify(rec));
+renderRecent();
+}
+function renderRecent(){
+let container=document.getElementById("recentContainer");
+container.innerHTML="";
+let rec=JSON.parse(localStorage.getItem("recent")||"[]");
+rec.forEach(v=>{
+const div=document.createElement("div");
+div.className="track";
+div.innerHTML=`<img src="${v.thumbnail}"><div><h4>${v.title}</h4><p>${v.author?.name||''}</p></div>`;
+div.onclick=()=>openPlayer(v);
+container.appendChild(div);
+});
+}
+
+// Saved sections
+function renderSaved(){
+["fav","playlist","recent"].forEach(type=>{
+let data=JSON.parse(localStorage.getItem(type)||"[]");
+let id=type==="fav"?"favorites":type==="playlist"?"playlists":"recentContainer";
+let container=document.getElementById(id);
+if(container){
+container.innerHTML="";
+data.forEach(v=>{
+const div=document.createElement("div");
+div.className="track";
+div.innerHTML=`<img src="${v.thumbnail}"><div><h4>${v.title}</h4><p>${v.author?.name||''}</p></div>`;
+div.onclick=()=>openPlayer(v);
+container.appendChild(div);
+});
+}
+});
+}
+
+// On load
 window.onload=()=>{
-fetchResults(currentQuery,false);
+loadTrending();
+renderSaved();
 };
 </script>
 
